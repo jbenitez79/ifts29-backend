@@ -1,0 +1,37 @@
+extends layout
+
+block content
+  h2 Lista de Clientes
+
+  table(border="1")
+    tr
+      th ID
+      th Nombre
+      th Apellido
+      th Email
+      th Telefono
+      th CUIT
+      th Domicilio
+      th Localidad
+      th Provincia
+      th Pais
+      th Codigo Postal
+      th Fecha de Nacimiento
+      th Acciones
+
+    each cliente in clientes
+      tr
+        td= cliente.id
+        td= cliente.nombre
+        td= cliente.apellido
+        td= cliente.email
+        td= cliente.telefono
+        td= cliente.cuit
+        td= cliente.domicilio
+        td= cliente.localidad
+        td= cliente.provincia
+        td= cliente.pais
+        td= cliente.codigoPostal
+        td= cliente.fechaNacimiento
+        td
+          a(href=`/clientes/${cliente.id}`) Ver

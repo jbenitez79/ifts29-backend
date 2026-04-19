@@ -1,0 +1,80 @@
+extends layout
+
+block content
+  h2 Nuevo cliente
+
+  form(method="POST", action="/clientes")
+
+    label ID :
+    input(type="number", name="id")
+
+    br
+    br
+
+    label Nombre:
+    input(type="text", name="nombre")
+
+    br
+    br
+
+    label Apellido:
+    input(type="text", name="apellido")
+
+    br
+    br
+
+    label Email:
+    input(type="email", name="email")
+
+    br
+    br
+
+    label Telefono:
+    input(type="number", name="telefono")
+
+    br
+    br
+
+    label CUIT:
+    input(type="number", name="cuit")
+
+    br
+    br
+
+    label Domicilio:
+    input(type="text", name="domicilio")
+
+    br
+    br
+
+    label Localidad:
+    input(type="text", name="localidad")
+
+    br
+    br
+
+    label Provincia:
+    input(type="text", name="provincia")
+
+    br
+    br
+
+    label Pais:
+    input(type="text", name="pais")
+
+    br
+    br
+
+    label Codigo Postal:
+    input(type="number", name="codigoPostal")
+
+    br
+    br
+
+    label Fecha de Nacimiento:
+    input(type="date", name="fechaNacimiento")
+
+    br
+    br
+
+    button(type="submit") Guardar
