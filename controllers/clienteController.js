@@ -46,7 +46,8 @@ const crearCliente = (req, res) => {
     try {
         const clientes = leerClientes();
         const { nombre, apellido, email, telefono, cuit, domicilio, localidad, provincia, pais, codigoPostal, fechaNacimiento } = req.body;
-        const nuevoCliente = new Cliente(nombre, apellido, email, telefono, cuit, domicilio, localidad, provincia, pais, codigoPostal, fechaNacimiento);
+        const nuevoId = clientes.length > 0 ? Math.max(...clientes.map(c => c.id)) + 1 : 1;
+        const nuevoCliente = new Cliente(nuevoId, nombre, apellido, email, telefono, cuit, domicilio, localidad, provincia, pais, codigoPostal, fechaNacimiento);
         clientes.push(nuevoCliente);
         fs.writeFileSync(rutaArchivo, JSON.stringify(clientes, null, 2));
         res.status(201).json(nuevoCliente);
