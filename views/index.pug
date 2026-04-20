@@ -34,4 +34,6 @@ block content
         td= cliente.codigoPostal
         td= cliente.fechaNacimiento
         td
-          a(href=`/clientes/${cliente.id}`) Ver
+          a(href=`/clientes/vista/detalle/${cliente.id}`) Ver
+          a(href=`/clientes/vista/editar/${cliente.id}`) Editar
+          a(href=`/clientes/vista/eliminar/${cliente.id}`) Eliminar

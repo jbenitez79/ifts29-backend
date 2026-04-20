@@ -1,16 +1,44 @@
 [
-    {
-        "id": 1,
-        "nombre": "Juan",
-        "apellido": "Perez",
-        "email": "juanper@email.com",
-        "telefono": "1144558899",
-        "cuit": "23257413699",
-        "domicilio": "Calle siempre via, nro 123",
-        "localidad": "La Plata",
-        "provincia": "Buenos Aires",
-        "pais": "Argentina",
-        "codigoPostal": "1900",
-        "fechaNacimiento": "1990-03-15"
-    }
+  {
+    "id": 1,
+    "nombre": "Juan23",
+    "apellido": "Perez",
+    "email": "juanper@email.com",
+    "telefono": "1144558899",
+    "cuit": "23257413699",
+    "domicilio": "Calle siempre via, nro 123",
+    "localidad": "La Plata",
+    "provincia": "Buenos Aires",
+    "pais": "Argentina",
+    "codigoPostal": "1900",
+    "fechaNacimiento": "1990-03-15"
+  },
+  {
+    "id": 2,
+    "nombre": "Pepe",
+    "apellido": "Argento",
+    "email": "pep@mail.com",
+    "telefono": "123456789",
+    "cuit": "321654987",
+    "domicilio": "Alguna Calle",
+    "localidad": "Algun partido",
+    "provincia": "Capital",
+    "pais": "Argentina",
+    "codigoPostal": "1200",
+    "fechaNacimiento": "2010-04-19"
+  },
+  {
+    "id": 3,
+    "nombre": "Moni",
+    "apellido": "Argento",
+    "email": "moni@mail.com",
+    "telefono": "74185296",
+    "cuit": "369258147",
+    "domicilio": "Calle Fe",
+    "localidad": "CABA",
+    "provincia": "CABA",
+    "pais": "Argentina",
+    "codigoPostal": "1226",
+    "fechaNacimiento": "1985-09-25"
+  }
 ]

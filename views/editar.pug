@@ -1,0 +1,62 @@
+extends layout
+
+block content
+  h2 Editar cliente
+
+  form(method="POST", action=`/clientes/editar/${cliente.id}`)
+    label Nombre:
+    input(type="text", name="nombre", value=cliente.nombre)
+    br
+    br
+
+    label Apellido:
+    input(type="text", name="apellido", value=cliente.apellido)
+    br
+    br
+
+    label Email:
+    input(type="email", name="email", value=cliente.email)
+    br
+    br
+
+    label Telefono:
+    input(type="number", name="telefono", value=cliente.telefono)
+    br
+    br
+
+    label CUIT:
+    input(type="number", name="cuit", value=cliente.cuit)
+    br
+    br
+
+    label Domicilio:
+    input(type="text", name="domicilio", value=cliente.domicilio)
+    br
+    br
+
+    label Localidad:
+    input(type="text", name="localidad", value=cliente.localidad)
+    br
+    br
+
+    label Provincia:
+    input(type="text", name="provincia", value=cliente.provincia)
+    br
+    br
+
+    label Pais:
+    input(type="text", name="pais", value=cliente.pais)
+    br
+    br
+
+    label Codigo Postal:
+    input(type="number", name="codigoPostal", value=cliente.codigoPostal)
+    br
+    br
+
+    label Fecha de Nacimiento:
+    input(type="date", name="fechaNacimiento", value=cliente.fechaNacimiento)
+    br
+    br
+
+    button(type="submit") Guardar
