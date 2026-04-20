@@ -111,11 +111,11 @@ const eliminarCliente = (req, res) => {
 // ==========================================
 const obtenerClienteVista = (req, res) => {
     const clientes = leerClientes();
-    res.render("index", { clientes });
+    res.render("clientes/index", { clientes });
 };
 
 const crearClienteVista = (req, res) => {
-    res.render("nuevoCliente");
+    res.render("clientes/nuevo");
 };
 
 const obtenerClienteVistaPorId = (req, res) => {
@@ -123,7 +123,7 @@ const obtenerClienteVistaPorId = (req, res) => {
     if (!cliente) {
         return res.status(404).json({ message: "Cliente no encontrado" });
     }
-    res.render("detail", { cliente });
+    res.render("clientes/detalle", { cliente });
 };
 
 const actualizarClienteVista = (req, res) => {
@@ -131,7 +131,7 @@ const actualizarClienteVista = (req, res) => {
     if (!cliente) {
         return res.status(404).json({ message: "Cliente no encontrado" });
     }
-    res.render("editar", { cliente });
+    res.render("clientes/editar", { cliente });
 };
 
 const eliminarClienteVista = (req, res) => {
@@ -139,7 +139,7 @@ const eliminarClienteVista = (req, res) => {
     if (!cliente) {
         return res.status(404).json({ message: "Cliente no encontrado" });
     }
-    res.render("eliminar", { cliente });
+    res.render("clientes/eliminar", { cliente });
 };
 
 module.exports = {

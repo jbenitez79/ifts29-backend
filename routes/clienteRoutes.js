@@ -19,7 +19,7 @@ const {
 
 // Respuesta HTML
 router.get("/vista", obtenerClienteVista);
-router.get("/vista/nuevoCliente", crearClienteVista);
+router.get("/vista/nuevo", crearClienteVista);
 router.get("/vista/detalle/:id", obtenerClienteVistaPorId);
 router.get("/vista/editar/:id", actualizarClienteVista);
 router.get("/vista/eliminar/:id", eliminarClienteVista);

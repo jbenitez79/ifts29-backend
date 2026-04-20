@@ -8,17 +8,14 @@ html(lang="es")
 
   body
     header
-      h1 Sistema CRUD Clientes
+      a(href="/" style="text-decoration:none; color:inherit;")
+        h1 TodoStock S.A.
       nav
-        a(href="/clientes/vista") Inicio
-        |  |
-        a(href="/clientes/nuevoCliente") Nuevo cliente
+        a(href="/") Módulos
+        a(href="/clientes/vista") Clientes
 
-    hr
-
-    block content
-
-    hr
+    main.content-container
+      block content
 
     footer
-      p Proyecto Node.js con JSON
+      p TodoStock S.A. © 2026 - Proyecto Node.js con JSON
