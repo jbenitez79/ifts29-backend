@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 3000;
 
 
 const clienteRoutes = require("./routes/clienteRoutes");
+const pedidoRoutes = require("./routes/pedidoRoutes");
 
 app.use(express.json());
 //middleware que puedr leer los datos enviados desde formularios HTML (method="POST").
@@ -20,6 +21,7 @@ app.use(express.static("public"));
 
 // rutas
 app.use("/clientes", clienteRoutes);
+app.use("/pedidos", pedidoRoutes);
 
 app.listen(PORT, () => {
     console.log("Servidor corriendo en puerto " + PORT);
