@@ -21,7 +21,11 @@ app.use(express.static("public"));
 
 // rutas
 app.use("/clientes", clienteRoutes);
+
 app.use("/pedidos", pedidoRoutes);
+
+app.use("/productos", require("./routes/productoRoutes"));
+
 
 app.listen(PORT, () => {
     console.log("Servidor corriendo en puerto " + PORT);
