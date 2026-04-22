@@ -1,0 +1,42 @@
+extends  ../pedidos/layout
+
+block content
+  h2 Pedido ##{pedido.id}
+
+  p
+    strong Cliente ID: 
+    = pedido.idCliente
+
+  p
+    strong Fecha: 
+    = pedido.fecha
+
+  p
+    strong Estado: 
+    = pedido.estado
+
+  p
+    strong Total: 
+    = "$" + pedido.total
+
+  h3 Productos
+    
+  table(border="1")
+    tr
+      th ID Producto
+      th Cantidad
+      th Precio
+      th Subtotal
+    each prod in pedido.productos
+      tr
+        td= prod.idProducto
+        td= prod.cantidad
+        td= "$" + prod.precio
+        td= "$" + (prod.cantidad * prod.precio)
+
+  br
+  br
+
+  a(href="/pedidos/editar/#{pedido.id}") Editar Pedido
+  |  | 
+  a(href="/pedidos", onclick="return confirm('¿Está seguro que desea eliminar este pedido?')") Eliminar

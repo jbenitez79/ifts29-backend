@@ -45,8 +45,8 @@ const obtenerClientePorId = (req, res) => {
 const crearCliente = (req, res) => {
     try {
         const clientes = leerClientes();
-        const { nombre, apellido, email, telefono, cuit, domicilio, localidad, provincia, pais, codigoPostal, fechaNacimiento } = req.body;
-        const nuevoCliente = new Cliente(nombre, apellido, email, telefono, cuit, domicilio, localidad, provincia, pais, codigoPostal, fechaNacimiento);
+        const { id, nombre, apellido, email, telefono, cuit, domicilio, localidad, provincia, pais, codigoPostal, fechaNacimiento } = req.body;
+        const nuevoCliente = new Cliente(id, nombre, apellido, email, telefono, cuit, domicilio, localidad, provincia, pais, codigoPostal, fechaNacimiento);
         clientes.push(nuevoCliente);
         fs.writeFileSync(rutaArchivo, JSON.stringify(clientes, null, 2));
         res.status(201).json(nuevoCliente);
@@ -104,6 +104,11 @@ const obtenerClienteVista = (req, res) => {
     const clientes = leerClientes();
     res.render("index", { clientes });
 };
+
+const obtenerNuevoClienteVista = (req, res) => {
+    res.render("nuevo");
+};
+
 module.exports = {
     obtenerClientes,
     obtenerClientePorId,
@@ -111,4 +116,5 @@ module.exports = {
     actualizarCliente,
     eliminarCliente,
     obtenerClienteVista,
+    obtenerNuevoClienteVista,
 };

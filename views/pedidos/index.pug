@@ -1,0 +1,29 @@
+extends ../pedidos/layout
+
+block content
+  h2 Lista de Pedidos
+
+  a(href="/pedidos/nuevo") Nuevo Pedido
+
+  table(border="1")
+    tr
+      th ID
+      th Cliente ID
+      th Fecha
+      th Estado
+      th Total
+      th Productos
+      th Acciones
+
+    each pedido in pedidos
+      tr
+        td= pedido.id
+        td= pedido.idCliente
+        td= pedido.fecha
+        td= pedido.estado
+        td= "$" + pedido.total
+        td= pedido.productos.length + " productos"
+        td
+          a(href=`/pedidos/${pedido.id}`) Ver
+          |  | 
+          a(href=`/pedidos/editar/${pedido.id}`) Editar

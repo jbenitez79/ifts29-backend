@@ -1,0 +1,57 @@
+extends ../pedidos/layout
+
+block content
+  h2 Nuevo Pedido
+
+  form(method="POST", action="/pedidos")
+    
+    label Cliente ID:
+    input(type="number", name="idCliente", required)
+
+    br
+    br
+
+    label Fecha:
+    input(type="date", name="fecha")
+
+    br
+    br
+
+    h3 Productos
+    div#productos-container
+      div.producto-item
+        label ID Producto:
+        input(type="number", name="productos[0][idProducto]", required)
+        
+        label Cantidad:
+        input(type="number", name="productos[0][cantidad]", min="1", required)
+        
+        label Precio:
+        input(type="number", name="productos[0][precio]", step="0.01", required)
+
+    button(type="button", onclick="agregarProducto()") + Agregar Producto
+
+    br
+    br
+
+    button(type="submit") Guardar Pedido
+
+  script.
+    let contador = 1;
+    function agregarProducto() {
+      const container = document.getElementById('productos-container');
+      const div = document.createElement('div');
+      div.className = 'producto-item';
+      div.innerHTML = `
+        <label>ID Producto:</label>
+        <input type="number" name="productos[${contador}][idProducto]" required>
+        
+        <label>Cantidad:</label>
+        <input type="number" name="productos[${contador}][cantidad]" min="1" required>
+        
+        <label>Precio:</label>
+        <input type="number" name="productos[${contador}][precio]" step="0.01" required>
+      `;
+      container.appendChild(div);
+      contador++;
+    }

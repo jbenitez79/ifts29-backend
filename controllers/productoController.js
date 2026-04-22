@@ -45,8 +45,8 @@ const obtenerProductoPorId = (req, res) => {
 const crearProducto = (req, res) => {
     try {
         const productos = leerProductos();
-        const { id, nombre, descripcion, precio, stock_minimo } = req.body;
-        const nuevoProducto = new Producto(id, nombre, descripcion, precio, stock_minimo);
+        const { id, nombre, descripcion, precio, stock, stock_minimo } = req.body;
+        const nuevoProducto = new Producto(id, nombre, descripcion, precio, stock, stock_minimo);
         productos.push(nuevoProducto);
         fs.writeFileSync(rutaArchivo, JSON.stringify(productos, null, 2));
         res.status(201).json(nuevoProducto);
@@ -68,6 +68,7 @@ const actualizarProducto = (req, res) => {
         producto.nombre = req.body.nombre;
         producto.descripcion = req.body.descripcion;
         producto.precio = req.body.precio;
+        producto.stock = req.body.stock;
         producto.stock_minimo = req.body.stock_minimo;
         fs.writeFileSync(rutaArchivo, JSON.stringify(productos, null, 2));
         res.json(producto);
@@ -96,7 +97,7 @@ const eliminarProducto = (req, res) => {
 };
 const obtenerProductoVista = (req, res) => {
     const productos = leerProductos();
-    res.render("index", { productos });
+    res.render("productos", { productos });
 };
 module.exports = {
     obtenerProductos,

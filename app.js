@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const methodOverride = require("method-override");
 const app = express();
 
 const PORT = process.env.PORT || 3000;
@@ -7,10 +8,11 @@ const PORT = process.env.PORT || 3000;
 
 const clienteRoutes = require("./routes/clienteRoutes");
 const pedidoRoutes = require("./routes/pedidoRoutes");
+const productoRoutes = require("./routes/productoRoutes");
 
 app.use(express.json());
-//middleware que puedr leer los datos enviados desde formularios HTML (method="POST").
 app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride("_method"));
 
 // Configura el motor de vistas Pug. Permite generar páginas HTML dinámicas desde el servidor. Es el motor de vistas
 app.set("view engine", "pug");
@@ -24,7 +26,7 @@ app.use("/clientes", clienteRoutes);
 
 app.use("/pedidos", pedidoRoutes);
 
-app.use("/productos", require("./routes/productoRoutes"));
+app.use("/productos", productoRoutes);
 
 
 app.listen(PORT, () => {

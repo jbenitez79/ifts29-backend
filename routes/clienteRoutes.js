@@ -8,13 +8,15 @@ const {
     obtenerClientePorId,
     crearCliente,
     actualizarCliente,
-    eliminarCliente
+    eliminarCliente,
+    obtenerNuevoClienteVista
 } = require("../controllers/ClienteController");
 
 // rutas CRUD
 
 router.get("/", obtenerClientes);
 router.get("/vista", obtenerClienteVista);
+router.get("/nuevo", obtenerNuevoClienteVista);
 router.get("/:id", obtenerClientePorId);
 router.post("/", crearCliente);
 router.put("/:id", actualizarCliente);
