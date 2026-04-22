@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "id": 1,
+    "idCliente": "1",
+    "productos": [
+      {
+        "idProducto": "2",
+        "cantidad": "3",
+        "precio": "3500"
+      }
+    ],
+    "fecha": "2026-04-22",
+    "estado": "entregado",
+    "total": 10500
+  },
+  {
+    "id": 2,
+    "idCliente": "1",
+    "productos": [
+      {
+        "idProducto": "2",
+        "cantidad": "1",
+        "precio": "3500"
+      }
+    ],
+    "fecha": "2026-04-21",
+    "estado": "pendiente",
+    "total": 3500
+  }
+]

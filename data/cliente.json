@@ -1,16 +1,16 @@
 [
-    {
-        "id": 1,
-        "nombre": "Juan",
-        "apellido": "Perez",
-        "email": "juanper@email.com",
-        "telefono": "1144558899",
-        "cuit": "23257413699",
-        "domicilio": "Calle siempre via, nro 123",
-        "localidad": "La Plata",
-        "provincia": "Buenos Aires",
-        "pais": "Argentina",
-        "codigoPostal": "1900",
-        "fechaNacimiento": "1990-03-15"
-    }
+  {
+    "id": 1,
+    "nombre": "Juan",
+    "apellido": "Perez",
+    "email": "juanper@email.com",
+    "telefono": "1144558899",
+    "cuit": "23257413699",
+    "domicilio": "Calle siempre via, nro 123",
+    "localidad": "La Plata",
+    "provincia": "Buenos Aires",
+    "pais": "Argentina",
+    "codigoPostal": "1900",
+    "fechaNacimiento": "1990-03-15"
+  }
 ]
