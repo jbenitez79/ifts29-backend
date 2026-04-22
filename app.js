@@ -29,9 +29,7 @@ app.get("/", (req, res) => {
 });
 app.use("/clientes", clienteRoutes);
 app.use("/pedidos", pedidoRoutes);
-
 app.use("/productos", productoRoutes);
-
 app.use("/cuentas", cuentaCorrienteRoutes);
 
 app.listen(PORT, () => {
