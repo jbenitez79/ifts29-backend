@@ -22,6 +22,9 @@ app.set("views", "./views");
 app.use(express.static("public"));
 
 // rutas
+app.get("/", (req, res) => {
+    res.render("index");
+});
 app.use("/clientes", clienteRoutes);
 
 app.use("/pedidos", pedidoRoutes);

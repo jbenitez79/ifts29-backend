@@ -1,37 +1,29 @@
 extends layout
 
 block content
-  h2 Lista de Clientes
+  .card(style="text-align: center; padding: 4rem 2rem; background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); color: white; border: none;")
+    h2(style="color: white; font-size: 2.5rem; margin-bottom: 1rem;") Bienvenido a TodoStock S.A.
+    p(style="font-size: 1.125rem; opacity: 0.9; max-width: 600px; margin: 0 auto;") Sistema integral de gestión de compras, ventas e inventarios para profesionalizar su negocio.
 
-  table(border="1")
-    tr
-      th ID
-      th Nombre
-      th Apellido
-      th Email
-      th Telefono
-      th CUIT
-      th Domicilio
-      th Localidad
-      th Provincia
-      th Pais
-      th Codigo Postal
-      th Fecha de Nacimiento
-      th Acciones
+  h3(style="margin-top: 3rem; margin-bottom: 1rem;") Módulos del Sistema
+  
+  .dashboard-grid
+    .module-card
+      h3 👥 Clientes
+      p Gestión de agenda de clientes, datos formales y consulta individual.
+      a.btn(href="/clientes/vista") Ir a Clientes
 
-    each cliente in clientes
-      tr
-        td= cliente.id
-        td= cliente.nombre
-        td= cliente.apellido
-        td= cliente.email
-        td= cliente.telefono
-        td= cliente.cuit
-        td= cliente.domicilio
-        td= cliente.localidad
-        td= cliente.provincia
-        td= cliente.pais
-        td= cliente.codigoPostal
-        td= cliente.fechaNacimiento
-        td
-          a(href=`/clientes/${cliente.id}`) Ver
+    .module-card
+      h3 📦 Productos
+      p Inventario general, control de stock y lista de precios (FEFO).
+      a.btn(href="#") Próximamente
+
+    .module-card
+      h3 🏢 Proveedores
+      p Registro de distribuidores y empresas asociadas.
+      a.btn(href="#") Próximamente
+
+    .module-card
+      h3 💳 Cuentas Corrientes
+      p Revisión de deudas, créditos y caja de ingresos y egresos.
+      a.btn(href="#") Próximamente
