@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "idCliente": 1,
+    "saldo": 0,
+    "limiteCredito": 150000,
+    "estado": "activo",
+    "historial": []
+  }
+]

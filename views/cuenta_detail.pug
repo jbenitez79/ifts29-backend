@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  h2 Detalle de Cuenta Corriente - Cliente #{cuenta.idCliente}
+
+  h3 Resumen
+  p 
+    strong Saldo Pendiente: 
+    span= `$${cuenta.saldo.toLocaleString()}`
+  p 
+    strong Límite de Crédito: 
+    span= `$${cuenta.limiteCredito.toLocaleString()}`
+  p 
+    strong Estado: 
+    span= cuenta.estado.toUpperCase()
+
+  h3 Historial de Movimientos
+  table(border="1")
+    tr
+      th Fecha
+      th Concepto
+      th Monto
+    
+    each mov in cuenta.historial
+      tr
+        td= mov.fecha
+        td= mov.tipo
+        td= `$${mov.monto.toLocaleString()}`
+
+  br
+  a(href="/cuentas/vista") Volver a la lista
