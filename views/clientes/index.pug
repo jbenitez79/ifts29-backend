@@ -1,0 +1,42 @@
+extends ../layout
+
+block content
+  div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;")
+    h2 Lista de Clientes
+    a.btn(href="/clientes/vista/nuevo") + Agregar Cliente
+
+  .table-wrapper
+    table
+      tr
+        th ID
+        th Nombre
+        th Apellido
+        th Email
+        th Telefono
+        th CUIT
+        th Domicilio
+        th Localidad
+        th Provincia
+        th Pais
+        th Codigo Postal
+        th Fecha de Nacimiento
+        th Acciones
+
+      each cliente in clientes
+        tr
+          td= cliente.id
+          td= cliente.nombre
+          td= cliente.apellido
+          td= cliente.email
+          td= cliente.telefono
+          td= cliente.cuit
+          td= cliente.domicilio
+          td= cliente.localidad
+          td= cliente.provincia
+          td= cliente.pais
+          td= cliente.codigoPostal
+          td= cliente.fechaNacimiento
+          td(style="display:flex; gap:0.5rem;")
+            a(href=`/clientes/vista/detalle/${cliente.id}`) Ver
+            a(href=`/clientes/vista/editar/${cliente.id}`) Editar
+            a(href=`/clientes/vista/eliminar/${cliente.id}`) Eliminar

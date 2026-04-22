@@ -1,0 +1,23 @@
+extends layout
+
+block content
+  h2 Estados de Cuenta Corriente
+
+  table(border="1")
+    tr
+      th ID Cuenta
+      th ID Cliente
+      th Saldo Actual
+      th Límite de Crédito
+      th Estado
+      th Acciones
+
+    each cuenta in cuentas
+      tr
+        td= cuenta.id
+        td= cuenta.idCliente
+        td= `$${cuenta.saldo.toLocaleString()}`
+        td= `$${cuenta.limiteCredito.toLocaleString()}`
+        td= cuenta.estado
+        td
+          a(href=`/cuentas/detalle/${cuenta.idCliente}`) Ver Historial

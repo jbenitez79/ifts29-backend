@@ -10,6 +10,8 @@ const clienteRoutes = require("./routes/clienteRoutes");
 const pedidoRoutes = require("./routes/pedidoRoutes");
 const productoRoutes = require("./routes/productoRoutes");
 
+const cuentaCorrienteRoutes = require("./routes/cuentaCorrienteRoutes");
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
@@ -22,12 +24,13 @@ app.set("views", "./views");
 app.use(express.static("public"));
 
 // rutas
+app.get("/", (req, res) => {
+    res.render("index");
+});
 app.use("/clientes", clienteRoutes);
-
 app.use("/pedidos", pedidoRoutes);
-
 app.use("/productos", productoRoutes);
-
+app.use("/cuentas", cuentaCorrienteRoutes);
 
 app.listen(PORT, () => {
     console.log("Servidor corriendo en puerto " + PORT);

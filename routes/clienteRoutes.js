@@ -7,16 +7,29 @@ const {
     obtenerClienteVista,
     obtenerClientePorId,
     crearCliente,
+    crearClienteVista,
     actualizarCliente,
     eliminarCliente,
-    obtenerNuevoClienteVista
+    obtenerClienteVistaPorId,
+    actualizarClienteVista,
+    eliminarClienteVista
 } = require("../controllers/ClienteController");
 
 // rutas CRUD
 
-router.get("/", obtenerClientes);
+// Respuesta HTML
 router.get("/vista", obtenerClienteVista);
-router.get("/nuevo", obtenerNuevoClienteVista);
+router.get("/vista/nuevo", crearClienteVista);
+router.get("/vista/detalle/:id", obtenerClienteVistaPorId);
+router.get("/vista/editar/:id", actualizarClienteVista);
+router.get("/vista/eliminar/:id", eliminarClienteVista);
+
+// Envío de formularios HTML
+router.post("/editar/:id", actualizarCliente);
+router.post("/eliminar/:id", eliminarCliente);
+
+// Respuesta JSON
+router.get("/", obtenerClientes);
 router.get("/:id", obtenerClientePorId);
 router.post("/", crearCliente);
 router.put("/:id", actualizarCliente);
