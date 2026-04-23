@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "nombre": "El Cacique S.R.L.",
+    "cuit": "30710819552",
+    "telefono": "46286164",
+    "email": "contacto@elcacique.com",
+    "domicilio": "Curuchet 1556",
+    "localidad": "Castelar",
+    "provincia": "Buenos Aires",
+    "pais": "Argentina",
+    "rubro": "Artículos de limpieza",
+    "condicionDePago": "contado",
+    "activo": true
+  },
+  {
+    "id": 2,
+    "nombre": "Quimica Oeste S.A.",
+    "cuit": "30-58423167-9",
+    "telefono": "1147650200",
+    "email": "ventas@quimicaoeste.com.ar",
+    "domicilio": "Av. Rivadavia 15420",
+    "localidad": "Haedo",
+    "provincia": "Buenos Aires",
+    "pais": "Argentina",
+    "rubro": "Artículos de limpieza e higiene",
+    "condicionDePago": "30 días",
+    "activo": true
+  }
+]
