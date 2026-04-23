@@ -7,6 +7,7 @@ const {
     crearCuenta,
     registrarPago,
     registrarCarga,
+    eliminarCuenta,
     obtenerCuentasVista,
     obtenerDetalleCuentaVista,
     crearCuentaVista,
@@ -23,5 +24,6 @@ router.get("/cliente/:idCliente", obtenerCuentaPorClienteId);
 router.post("/", crearCuenta);
 router.post("/pago", registrarPago);
 router.post("/cargo", registrarCarga);
+router.post("/eliminar/:idCliente", eliminarCuenta);
 
 module.exports = router;

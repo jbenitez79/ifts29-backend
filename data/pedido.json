@@ -45,5 +45,24 @@
     "fecha": "2026-04-20",
     "estado": "pendiente",
     "total": 12000
+  },
+  {
+    "id": 5,
+    "idCliente": "2",
+    "productos": [
+      {
+        "idProducto": "2",
+        "cantidad": "4",
+        "precio": "3000"
+      },
+      {
+        "idProducto": "1500",
+        "cantidad": "4",
+        "precio": "2100"
+      }
+    ],
+    "fecha": "2026-04-22",
+    "estado": "aprobado",
+    "total": 20400
   }
 ]

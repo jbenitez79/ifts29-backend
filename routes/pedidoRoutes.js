@@ -15,11 +15,12 @@ const {
 } = require("../controllers/pedidoController");
 
 router.get("/vista", obtenerPedidosVista);
-router.get("/vista/nuevo", crearPedidoVista);
-router.get("/vista/detalle/:id", obtenerPedidoPorIdVista);
-router.get("/vista/editar/:id", actualizarPedidoVista);
-router.get("/vista/eliminar/:id", eliminarPedidoVista);
+router.get("/nuevo", crearPedidoVista);
+router.get("/editar/:id", actualizarPedidoVista);
+router.get("/eliminar/:id", eliminarPedidoVista);
+router.get("/:id/vista", obtenerPedidoPorIdVista);
 
+router.post("/nuevo", crearPedido);
 router.post("/editar/:id", actualizarPedido);
 router.post("/eliminar/:id", eliminarPedido);
 

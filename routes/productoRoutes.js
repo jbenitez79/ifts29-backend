@@ -12,6 +12,7 @@ const {
     crearProductoVista,
     editarProductoVista,
     eliminarProductoVista,
+    buscarProductoPorNombre
 } = require("../controllers/productoController");
 
 router.get("/vista", obtenerProductosVista);
@@ -21,6 +22,7 @@ router.get("/vista/editar/:id", editarProductoVista);
 router.get("/vista/eliminar/:id", eliminarProductoVista);
 
 router.get("/", obtenerProductos);
+router.get("/buscarnombre/:nombre", buscarProductoPorNombre);
 router.get("/:id", obtenerProductoPorId);
 router.post("/", crearProducto);
 router.put("/:id", actualizarProducto);

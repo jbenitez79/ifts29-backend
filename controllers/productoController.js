@@ -15,6 +15,20 @@ const guardarProductos = (productos) => {
     fs.writeFileSync(rutaArchivo, JSON.stringify(productos, null, 2));
 };
 
+const buscarProductoPorNombre = (req, res) => {
+    try {
+        const productos = leerProductos();
+        const nombre = req.params.nombre.toLowerCase();
+        const producto = productos.find((p) => p.nombre.toLowerCase().includes(nombre));
+        if (!producto) {
+            return res.status(404).json({ message: "Producto no encontrado" });
+        }
+        res.json(producto);
+    } catch (error) {
+        res.status(500).json({ message: "Error al buscar producto" });
+    }
+};
+
 const obtenerProductos = (req, res) => {
     try {
         const productos = leerProductos();
@@ -170,4 +184,5 @@ module.exports = {
     crearProductoVista,
     editarProductoVista,
     eliminarProductoVista,
+    buscarProductoPorNombre,
 };

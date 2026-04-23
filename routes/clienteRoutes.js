@@ -12,8 +12,9 @@ const {
     eliminarCliente,
     obtenerClienteVistaPorId,
     actualizarClienteVista,
-    eliminarClienteVista
-} = require("../controllers/ClienteController");
+    eliminarClienteVista,
+    buscarClientePorCuit
+} = require("../controllers/clienteController");
 
 // rutas CRUD
 
@@ -30,6 +31,7 @@ router.post("/eliminar/:id", eliminarCliente);
 
 // Respuesta JSON
 router.get("/", obtenerClientes);
+router.get("/buscarcuit/:cuit", buscarClientePorCuit);
 router.get("/:id", obtenerClientePorId);
 router.post("/", crearCliente);
 router.put("/:id", actualizarCliente);

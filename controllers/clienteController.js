@@ -25,6 +25,21 @@ const buscarClientePorIdInterno = (id) => {
     return clientes.find((c) => c.id === parseInt(id));
 };
 
+const buscarClientePorCuit = (req, res) => {
+    try {
+        const clientes = leerClientes();
+        const cuit = req.params.cuit;
+        const cliente = clientes.find((c) => String(c.cuit) === String(cuit));
+        if (!cliente) {
+            return res.status(404).json({ message: "Cliente no encontrado" });
+        }
+        res.json(cliente);
+    } catch (error) {
+        console.error("Error al buscar cliente por CUIT:", error);
+        res.status(500).json({ message: "Error al buscar cliente" });
+    }
+};
+
 // ==========================================
 // 2. CONTROLADORES JSON (Endpoints de la API)
 // ==========================================
@@ -149,6 +164,7 @@ module.exports = {
     crearCliente,
     actualizarCliente,
     eliminarCliente,
+    buscarClientePorCuit,
     // VISTAS
     obtenerClienteVista,
     crearClienteVista,

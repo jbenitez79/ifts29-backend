@@ -5,38 +5,44 @@ block content
 
   .card
     p
-      strong ID:
+      strong ID Pedido:
       | #{pedido.id}
-
-    p
-      strong Cliente:
-      | #{pedido.idCliente}
 
     p
       strong Fecha:
       | #{pedido.fecha}
+
+    if pedido.cliente
+      p
+        strong CUIT Cliente:
+        | #{pedido.cliente.cuit}
+      p
+        strong Cliente:
+        | #{pedido.cliente.nombre} #{pedido.cliente.apellido}
 
     p
       strong Estado:
       span(style=`padding: 0.25rem 0.5rem; border-radius: 0.25rem; background-color: ${pedido.estado === 'pendiente' ? '#fef3c7' : pedido.estado === 'aprobado' ? '#d1fae5' : pedido.estado === 'cancelado' ? '#fee2e2' : '#e0e7ff'}; color: ${pedido.estado === 'pendiente' ? '#92400e' : pedido.estado === 'aprobado' ? '#065f46' : pedido.estado === 'cancelado' ? '#991b1b' : '#3730a3'};`)
         = pedido.estado
 
-    p
-      strong Total:
-      | $#{pedido.total}
+    h3(style="margin-top: 1.5rem;") Detalle de Productos
 
-    h3(style="margin-top: 1.5rem;") Productos
+    table
+      thead
+        tr
+          th Cantidad
+          th Descripción
+          th Precio Unitario
+          th Subtotal
+      tbody
+        each prod in pedido.productos
+          tr
+            td= prod.cantidad
+            td= prod.descripcion || prod.nombreProducto
+            td= "$" + prod.precio
+            td= "$" + prod.subtotal
 
-    each prod in pedido.productos
-      p
-        strong ID Producto:
-        | #{prod.idProducto}
-      p
-        strong Cantidad:
-        | #{prod.cantidad}
-      p
-        strong Precio:
-        | $#{prod.precio}
-      hr
+    .total-pedido
+      strong Total: $#{pedido.total}
 
   a.btn(href="/pedidos/vista") Volver

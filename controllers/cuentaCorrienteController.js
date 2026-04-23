@@ -99,7 +99,11 @@ const registrarPago = (req, res) => {
         }
 
         guardarCuentas(cuentas);
-        res.json({ message: "Pago registrado exitosamente", cuenta: cuentas[cuentaIndex] });
+        if (req.xhr || req.headers.accept?.includes("json")) {
+            res.json({ message: "Pago registrado exitosamente", cuenta: cuentas[cuentaIndex] });
+        } else {
+            res.redirect("/cuentas/vista");
+        }
     } catch (error) {
         res.status(500).json({ message: "Error al registrar el pago" });
     }
@@ -134,15 +138,41 @@ const registrarCarga = (req, res) => {
         }
 
         guardarCuentas(cuentas);
-        res.json({ message: "Carga registrada exitosamente", cuenta: cuentas[cuentaIndex] });
+        if (req.xhr || req.headers.accept?.includes("json")) {
+            res.json({ message: "Carga registrada exitosamente", cuenta: cuentas[cuentaIndex] });
+        } else {
+            res.redirect("/cuentas/vista");
+        }
     } catch (error) {
         res.status(500).json({ message: "Error al registrar la carga" });
     }
 };
 
-const obtenerCuentasVista = (req, res) => {
-    const cuentas = leerCuentas();
-    res.render("cuentas/index", { cuentas });
+const eliminarCuenta = (req, res) => {
+    try {
+        const cuentas = leerCuentas();
+        const idCliente = parseInt(req.params.idCliente);
+        const cuentaIndex = cuentas.findIndex(c => c.idCliente === idCliente);
+
+        if (cuentaIndex === -1) {
+            return res.status(404).json({ message: "Cuenta no encontrada" });
+        }
+
+        if (cuentas[cuentaIndex].saldo > 0) {
+            return res.status(400).json({ message: "No se puede eliminar una cuenta con saldo pendiente" });
+        }
+
+        cuentas.splice(cuentaIndex, 1);
+        guardarCuentas(cuentas);
+
+        if (req.xhr || req.headers.accept?.includes("json")) {
+            res.json({ message: "Cuenta eliminada exitosamente" });
+        } else {
+            res.redirect("/cuentas/vista");
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Error al eliminar la cuenta" });
+    }
 };
 
 const obtenerDetalleCuentaVista = (req, res) => {
@@ -175,6 +205,7 @@ module.exports = {
     crearCuenta,
     registrarPago,
     registrarCarga,
+    eliminarCuenta,
     obtenerCuentasVista,
     obtenerDetalleCuentaVista,
     crearCuentaVista,

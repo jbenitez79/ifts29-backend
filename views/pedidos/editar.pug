@@ -3,7 +3,7 @@ extends ../layout
 block content
   h2 Editar Pedido
 
-  form(method="POST", action=`/pedidos/${pedido.id}?_method=PUT`)
+  form(method="POST", action=`/pedidos/editar/${pedido.id}`)
 
     label Cliente ID:
     input(type="number", name="idCliente", value=pedido.idCliente)
@@ -27,21 +27,22 @@ block content
 
     h3 Productos
     each prod, index in pedido.productos
-      label ID Producto:
-      input(type="number", name=`productos[${index}][idProducto]`, value=prod.idProducto)
-      br
-      br
+      div.producto-item
+        label ID Producto:
+        input(type="number", name=`productos[${index}][idProducto]`, value=prod.idProducto)
+        br
+        br
 
-      label Cantidad:
-      input(type="number", name=`productos[${index}][cantidad]`, value=prod.cantidad)
-      br
-      br
+        label Cantidad:
+        input(type="number", name=`productos[${index}][cantidad]`, value=prod.cantidad)
+        br
+        br
 
-      label Precio:
-      input(type="number", name=`productos[${index}][precio]`, value=prod.precio, step="0.01")
-      br
-      br
+        label Precio:
+        input(type="number", name=`productos[${index}][precio]`, value=prod.precio, step="0.01")
+        br
+        br
 
     button(type="submit") Guardar
 
-  a(href="/pedidos/vista") Volver
+  a.btn(href="/pedidos/vista") Volver

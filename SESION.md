@@ -1,6 +1,6 @@
 # Reporte de Sesión - Análisis del Proyecto
 
-**Fecha:** 22/04/2026
+**Fecha:** 23/04/2026
 **Proyecto:** ifts29-backend (TodoStock S.A.)
 
 ---
@@ -11,75 +11,66 @@
 |------------|----------|--------|
 | **Routes** | `clienteRoutes.js`, `pedidoRoutes.js`, `productoRoutes.js`, `cuentaCorrienteRoutes.js` | ✓ Completo |
 | **Controllers** | `clienteController.js`, `pedidoController.js`, `productoController.js`, `cuentaCorrienteController.js` | ✓ Completo |
-| **Views** | `clientes/*.pug` (5 archivos), `pedidos/*.pug` (5 archivos), cuentas | ✓ Completo |
+| **Views** | `clientes/*.pug` (5), `pedidos/*.pug` (5), `cuentas/*.pug` (4) | ✓ Completo |
 | **Main** | `app.js`, `layout.pug`, `index.pug` | ✓ Configurado |
 
-**Stack tecnológico:** Express.js + Pug templates + body-parser + method-override
+**Stack:** Express.js + Pug templates + body-parser + method-override
 
 ---
 
-## 2. Coherencia de Archivos
+## 2. Módulo Pedidos
 
-**✓ Verificación exitosa:**
-- `pedidoRoutes.js` está correctamente importado en `app.js` (líneas 10 y 31)
-- La ruta `/pedidos/vista` existe para mostrar el listado (línea 16 de `pedidoRoutes.js`)
-- Views de pedidos tienen su propio `layout.pug` independiente
-- Controller existe en `controllers/pedidoController.js`
-- El módulo Pedidos ya está funcionando y listo para integrar al menú
+### Funcionalidades implementadas:
+- Crear pedido buscando cliente por CUIT
+- Buscar producto por nombre
+- Lista con: fecha, CUIT, cliente, estado, cantidad productos, total
+- Detalle con tabla de productos
+- Estados: pendiente, aprobado, enviado, entregado, cancelado
+- Descuento de stock al crear pedido
+- Restitución de stock al cancelar
 
----
-
-## 3. Incorporar Módulo Pedidos al Menú Inicial
-
-### Problema identificado:
-El módulo Pedidos NO aparece en `views/index.pug` (menú principal).
-
-### Correcciones requeridas:
-
-**Archivo 1: `views/index.pug`**
-
-Agregar un nuevo módulo después de "Cuentas Corrientes" (~línea 27):
-
-```pug
-    .module-card
-      h3 📋 Pedidos
-      p Gestión de pedidos de clientes con seguimiento de estados.
-      a.btn(href="/pedidos/vista") Ir a Pedidos
-```
-
-**Archivo 2: `views/layout.pug`**
-
-Agregar link al nav principal (~línea 15):
-
-```pug
-        a(href="/pedidos/vista") Pedidos
-```
-
-### Resumen de cambios:
-| Archivo | Cambio | Tipo |
-|---------|--------|------|
-| `views/index.pug` | Agregar card de Pedidos al dashboard | Nuevo módulo UI |
-| `views/layout.pug` | Agregar link en navegación | Navegación |
-
-### No se requieren cambios en:
-- `app.js` (ya tiene `app.use("/pedidos", pedidoRoutes)`)
-- `routes/pedidoRoutes.js` (ya tiene `/vista` configurado)
-- Controllers (ya existen)
+### Rutas corregidas:
+- `/pedidos/vista` - lista
+- `/pedidos/nuevo` - crear
+- `/pedidos/:id/vista` - detalle
+- `/pedidos/editar/:id` - editar
+- `/pedidos/eliminar/:id` - eliminar
+- POST `/pedidos/editar/:id` - guardar edición
+- POST `/pedidos/eliminar/:id` - confirmar eliminación
 
 ---
 
-## 4. Estado de Módulos en Menú Principal
+## 3. Módulo Cuentas Corrientes
 
-| Módulo | index.pug | Funcional |
-|--------|-----------|----------|
-| Clientes | ✓ Link activo | ✓ |
-| Productos | "Próximamente" | ✗ |
-| Proveedores | "Próximamente" | ✗ |
-| Cuentas Corrientes | "Próximamente" | ✗ |
-| **Pedidos** | **NO aparece** | **✓ Funcional** |
+### Funcionalidades:
+- Crear cuenta corriente por cliente
+- Registrar pagos (disminuye saldo)
+- Registrar cargas (aumenta saldo)
+- Historial de movimientos
+- Eliminar cuenta (solo si saldo = 0)
+
+### Rutas:
+- `/cuentas/vista` - lista
+- `/cuentas/vista/nuevo` - crear cuenta
+- `/cuentas/vista/detalle/:idCliente` - detalle
+- `/cuentas/vista/editar/:idCliente` - cargar/pagar
+- POST `/cuentas/pago` - registrar pago
+- POST `/cuentas/cargo` - registrar carga
+- POST `/cuentas/eliminar/:idCliente` - eliminar
+
+### Cambios recientes:
+- Registrar pago ahora redirige a `/cuentas/vista`
+- Registrar carga ahora redirige a `/cuentas/vista`
+- Agregada acción eliminar en lista
 
 ---
 
-## Conclusión
+## 4. Menú Principal (index.pug)
 
-El módulo Pedidos está completamente implementado y listo para usar. Solo requiere agregar su referencia visual en el menú principal (`index.pug`) y en la navegación global (`layout.pug`) para que los usuarios puedan acceder a él.
+| Módulo | Link |
+|--------|------|
+| Clientes | `/clientes/vista` |
+| Productos | "#" (próximamente) |
+| Proveedores | "#" (próximamente) |
+| Cuentas Corrientes | "/cuentas/vista" |
+| Pedidos | `/pedidos/vista` |

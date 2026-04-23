@@ -18,9 +18,61 @@ const guardarPedidos = (ruta, datos) => {
     fs.writeFileSync(ruta, JSON.stringify(datos, null, 2));
 };
 
+const buscarClientePorCuit = (cuit) => {
+    const clientes = leerClientes();
+    return clientes.find(c => c.cuit === String(cuit));
+};
+
+const buscarProductoPorNombre = (nombre) => {
+    const productos = leerProductos();
+    const nombreLower = nombre.toLowerCase();
+    return productos.find(p => p.nombre.toLowerCase().includes(nombreLower));
+};
+
+const obtenerClientePorId = (id) => {
+    const clientes = leerClientes();
+    return clientes.find(c => c.id === parseInt(id));
+};
+
+const obtenerProductoPorId = (id) => {
+    const productos = leerProductos();
+    return productos.find(p => p.id === parseInt(id));
+};
+
 const buscarPedidoPorIdInterno = (id) => {
     const pedidos = leerPedidos();
     return pedidos.find((p) => p.id === parseInt(id));
+};
+
+const enrichPedidoConDatosClienteYProducto = (pedido) => {
+    if (!pedido) return null;
+    const cliente = obtenerClientePorId(pedido.idCliente);
+    const productosEnriquecidos = pedido.productos.map(p => {
+        const producto = obtenerProductoPorId(p.idProducto);
+        return {
+            ...p,
+            descripcion: producto ? producto.descripcion : 'Sin descripción',
+            nombreProducto: producto ? producto.nombre : 'Producto desconocido',
+            subtotal: parseInt(p.cantidad) * parseFloat(p.precio)
+        };
+    });
+    return {
+        ...pedido,
+        cliente,
+        productos: productosEnriquecidos
+    };
+};
+
+const enrichListaPedidos = (pedidos) => {
+    return pedidos.map(pedido => {
+        const cliente = obtenerClientePorId(pedido.idCliente);
+        return {
+            ...pedido,
+            nombreCliente: cliente ? `${cliente.nombre} ${cliente.apellido}` : 'Cliente desconocido',
+            cuitCliente: cliente ? cliente.cuit : '',
+            cantidadProductos: pedido.productos.length
+        };
+    });
 };
 
 const leerPedidos = () => leerArchivo(rutaArchivo);
@@ -81,7 +133,8 @@ const restituirStock = (productosPedido) => {
 const obtenerPedidos = (req, res) => {
     try {
         const pedidos = leerPedidos();
-        res.json(pedidos);
+        const pedidosEnriquecidos = enrichListaPedidos(pedidos);
+        res.json(pedidosEnriquecidos);
     } catch (error) {
         res.status(500).json({ message: "Error al obtener los pedidos" });
     }
@@ -95,7 +148,8 @@ const obtenerPedidoPorId = (req, res) => {
         if (!pedido) {
             return res.status(404).json({ message: "Pedido no encontrado" });
         }
-        res.json(pedido);
+        const pedidoEnriquecido = enrichPedidoConDatosClienteYProducto(pedido);
+        res.json(pedidoEnriquecido);
     } catch (error) {
         res.status(500).json({ message: "Error al obtener el pedido" });
     }
@@ -106,14 +160,23 @@ const crearPedido = (req, res) => {
         const pedidos = leerPedidos();
         const { idCliente, productos, fecha } = req.body;
 
-        if (!idCliente || !productos || !Array.isArray(productos) || productos.length === 0) {
+        if (!productos || !Array.isArray(productos) || productos.length === 0) {
             return res.status(400).json({ message: "Datos incompletos: se requiere idCliente y productos" });
         }
 
-        const clientes = leerClientes();
-        const idClienteNum = parseInt(idCliente);
-        if (!clientes.find(c => c.id == idClienteNum)) {
-            return res.status(400).json({ message: `Cliente con ID ${idCliente} no existe` });
+        let cliente;
+        if (req.body.cuit) {
+            cliente = buscarClientePorCuit(req.body.cuit);
+            if (!cliente) {
+                return res.status(400).json({ message: `Cliente con CUIT ${req.body.cuit} no encontrado` });
+            }
+        } else if (idCliente) {
+            cliente = obtenerClientePorId(idCliente);
+            if (!cliente) {
+                return res.status(400).json({ message: `Cliente con ID ${idCliente} no existe` });
+            }
+        } else {
+            return res.status(400).json({ message: "Se requiere CUIT o ID del cliente" });
         }
 
         const erroresStock = validarStock(productos);
@@ -125,7 +188,7 @@ const crearPedido = (req, res) => {
 
         const nuevoPedido = {
             id: obtenerNuevoId(pedidos),
-            idCliente: idCliente,
+            idCliente: cliente.id,
             productos: productos,
             fecha: fecha || new Date().toISOString().split("T")[0],
             estado: "pendiente",
@@ -230,7 +293,8 @@ const eliminarPedido = (req, res) => {
 
 const obtenerPedidosVista = (req, res) => {
     const pedidos = leerPedidos();
-    res.render("pedidos/index", { pedidos });
+    const pedidosEnriquecidos = enrichListaPedidos(pedidos);
+    res.render("pedidos/index", { pedidos: pedidosEnriquecidos });
 };
 
 const obtenerPedidoPorIdVista = (req, res) => {
@@ -240,11 +304,14 @@ const obtenerPedidoPorIdVista = (req, res) => {
     if (!pedido) {
         return res.status(404).json({ message: "Pedido no encontrado" });
     }
-    res.render("pedidos/detalle", { pedido });
+    const pedidoEnriquecido = enrichPedidoConDatosClienteYProducto(pedido);
+    res.render("pedidos/detalle", { pedido: pedidoEnriquecido });
 };
 
 const crearPedidoVista = (req, res) => {
-    res.render("pedidos/nuevo");
+    const clientes = leerClientes();
+    const productos = leerProductos();
+    res.render("pedidos/nuevo", { clientes, productos });
 };
 
 const actualizarPedidoVista = (req, res) => {

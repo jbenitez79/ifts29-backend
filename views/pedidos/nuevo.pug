@@ -5,10 +5,13 @@ block content
 
   form(method="POST", action="/pedidos")
 
-    label Cliente ID:
-    input(type="number", name="idCliente", required)
-    br
-    br
+    h3 Cliente
+    label CUIT (buscar por CUIT):
+    input(type="text", name="cuit", id="cuitInput", placeholder="Ingrese CUIT del cliente", oninput="buscarClientePorCuit()")
+    input(type="hidden", name="idCliente", id="idClienteHidden")
+    #cliente-info
+      if clienteSeleccionado
+        p Cliente seleccionado: #{clienteSeleccionado.nombre} #{clienteSeleccionado.apellido} - CUIT: #{clienteSeleccionado.cuit}
 
     label Fecha:
     input(type="date", name="fecha")
@@ -19,9 +22,10 @@ block content
 
     div#productos-container
       .producto-item
-        label ID Producto:
-        input(type="number", name="productos[0][idProducto]", required)
-        br
+        label Producto (buscar por nombre):
+        input(type="text", name="productos[0][nombreProducto]", id="productoInput0", placeholder="Ingrese nombre del producto", oninput="buscarProductoPorNombre(0)")
+        input(type="hidden", name="productos[0][idProducto]", id="idProductoHidden0")
+        #producto-info-0.producto-info
         br
 
         label Cantidad:
@@ -29,7 +33,7 @@ block content
         br
         br
 
-        label Precio:
+        label Precio Unitario:
         input(type="number", name="productos[0][precio]", step="0.01", required)
         br
         br
@@ -42,22 +46,63 @@ block content
 
     script.
       let contador = 1;
+      
+      function buscarClientePorCuit() {
+        const cuit = document.getElementById('cuitInput').value;
+        if (cuit.length >= 8) {
+          fetch(`/clientes/buscarcuit/${cuit}`)
+            .then(res => res.json())
+            .then(data => {
+              if (data && data.id) {
+                document.getElementById('idClienteHidden').value = data.id;
+                document.getElementById('cliente-info').innerHTML = 
+                  `<p style="color: green;">✓ Cliente: <strong>${data.nombre} ${data.apellido}</strong> - CUIT: ${data.cuit}</p>`;
+              }
+            })
+            .catch(err => console.error(err));
+        }
+      }
+
+      function buscarProductoPorNombre(index) {
+        const input = document.getElementById('productoInput' + index);
+        const nombre = input.value;
+        if (nombre.length >= 3) {
+          fetch(`/productos/buscarnombre/${encodeURIComponent(nombre)}`)
+            .then(res => res.json())
+            .then(data => {
+              if (data && data.id) {
+                document.getElementById('idProductoHidden' + index).value = data.id;
+                document.getElementById('producto-info-' + index).innerHTML = 
+                  `<p style="color: green;">✓ Producto: <strong>${data.nombre}</strong> - Stock: ${data.stock} - Precio: $${data.precio}</p>`;
+                // Auto-completar precio
+                const precioInput = document.querySelector(`input[name="productos[${index}][precio]"]`);
+                if (precioInput && !precioInput.value) {
+                  precioInput.value = data.precio;
+                }
+              }
+            })
+            .catch(err => console.error(err));
+        }
+      }
+
       function agregarProducto() {
         const container = document.getElementById('productos-container');
         const div = document.createElement('div');
         div.className = 'producto-item';
         div.innerHTML = `
-          <label>ID Producto:</label>
-          <input type="number" name="productos[${contador}][idProducto]" required>
-          <br><br>
+          <label>Producto (buscar por nombre):</label>
+          <input type="text" name="productos[${contador}][nombreProducto]" id="productoInput${contador}" placeholder="Ingrese nombre del producto" oninput="buscarProductoPorNombre(${contador})">
+          <input type="hidden" name="productos[${contador}][idProducto]" id="idProductoHidden${contador}">
+          <div id="producto-info-${contador}" class="producto-info"></div>
+          <br>
 
           <label>Cantidad:</label>
           <input type="number" name="productos[${contador}][cantidad]" min="1" required>
-          <br><br>
+          <br>
 
-          <label>Precio:</label>
+          <label>Precio Unitario:</label>
           <input type="number" name="productos[${contador}][precio]" step="0.01" required>
-          <br><br>
+          <br>
         `;
         container.appendChild(div);
         contador++;
