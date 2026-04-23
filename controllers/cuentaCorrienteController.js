@@ -175,6 +175,11 @@ const eliminarCuenta = (req, res) => {
     }
 };
 
+const obtenerCuentasVista = (req, res) => {
+    const cuentas = leerCuentas();
+    res.render("cuentas/index", { cuentas });
+};
+
 const obtenerDetalleCuentaVista = (req, res) => {
     const cuentas = leerCuentas();
     const idCliente = parseInt(req.params.idCliente);
