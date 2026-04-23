@@ -1,0 +1,49 @@
+extends ../layout
+
+block content
+  h2 Detalle Cuenta Corriente
+
+  .card
+    p
+      strong ID:
+      | #{cuenta.id}
+
+    p
+      strong Cliente ID:
+      | #{cuenta.idCliente}
+
+    p
+      strong Saldo:
+      span(style=`color: ${cuenta.saldo > 0 ? 'red' : 'green'}`)
+        | $#{cuenta.saldo.toFixed(2)}
+
+    p
+      strong Límite Crédito:
+      | $#{cuenta.limiteCredito}
+
+    p
+      strong Estado:
+      span(style=`padding: 0.25rem 0.5rem; border-radius: 0.25rem; background-color: ${cuenta.estado === 'activo' ? '#d1fae5' : '#fee2e2'}; color: ${cuenta.estado === 'activo' ? '#065f46' : '#991b1b'};`)
+        = cuenta.estado
+
+    if cuenta.historial && cuenta.historial.length > 0
+      h3(style="margin-top: 1.5rem;") Historial
+
+      .table-wrapper
+        table
+          tr
+            th Fecha
+            th Tipo
+            th Monto
+            th Descripción
+
+          each mov in cuenta.historial
+            tr
+              td= mov.fecha
+              td
+                span(style=`padding: 0.25rem 0.5rem; border-radius: 0.25rem; background-color: ${mov.tipo === 'PAGO' ? '#d1fae5' : '#fee2e2'};`)
+                  = mov.tipo
+              td= "$" + mov.monto.toFixed(2)
+              td= mov.descripcion || "-"
+
+  a.btn(href="/cuentas/vista") Volver

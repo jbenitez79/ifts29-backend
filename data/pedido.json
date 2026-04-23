@@ -1,0 +1,68 @@
+[
+  {
+    "id": 2,
+    "idCliente": "1",
+    "productos": [
+      {
+        "idProducto": "2",
+        "cantidad": "1",
+        "precio": "3500"
+      }
+    ],
+    "fecha": "2026-04-21",
+    "estado": "aprobado",
+    "total": 3500
+  },
+  {
+    "id": 3,
+    "idCliente": "2",
+    "productos": [
+      {
+        "idProducto": "2",
+        "cantidad": "3",
+        "precio": "3500"
+      }
+    ],
+    "fecha": "2026-04-22",
+    "estado": "aprobado",
+    "total": 10500
+  },
+  {
+    "id": 4,
+    "idCliente": "3",
+    "productos": [
+      {
+        "idProducto": "344",
+        "cantidad": "2",
+        "precio": "3000"
+      },
+      {
+        "idProducto": "1499",
+        "cantidad": "3",
+        "precio": "2000"
+      }
+    ],
+    "fecha": "2026-04-20",
+    "estado": "pendiente",
+    "total": 12000
+  },
+  {
+    "id": 5,
+    "idCliente": "2",
+    "productos": [
+      {
+        "idProducto": "2",
+        "cantidad": "4",
+        "precio": "3000"
+      },
+      {
+        "idProducto": "1500",
+        "cantidad": "4",
+        "precio": "2100"
+      }
+    ],
+    "fecha": "2026-04-22",
+    "estado": "aprobado",
+    "total": 20400
+  }
+]

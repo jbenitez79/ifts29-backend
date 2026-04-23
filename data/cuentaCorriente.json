@@ -1,0 +1,53 @@
+[
+  {
+    "id": 1,
+    "idCliente": 1,
+    "saldo": 10000,
+    "limiteCredito": 150000,
+    "estado": "activo",
+    "historial": [
+      {
+        "fecha": "2026-04-23",
+        "tipo": "CARGO",
+        "monto": 10000,
+        "descripcion": ""
+      },
+      {
+        "fecha": "2026-04-23",
+        "tipo": "PAGO",
+        "monto": 15000
+      },
+      {
+        "fecha": "2026-04-23",
+        "tipo": "CARGO",
+        "monto": 20000,
+        "descripcion": "Pedido #21563 23-04-2026"
+      },
+      {
+        "fecha": "2026-04-23",
+        "tipo": "PAGO",
+        "monto": 5000
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "idCliente": 3,
+    "saldo": 0,
+    "limiteCredito": 150000,
+    "estado": "activo",
+    "historial": [
+      {
+        "fecha": "2026-04-23",
+        "tipo": "PAGO",
+        "monto": 5000
+      },
+      {
+        "fecha": "2026-04-23",
+        "tipo": "CARGO",
+        "monto": 5000,
+        "descripcion": "Nuevo pedido"
+      }
+    ]
+  }
+]

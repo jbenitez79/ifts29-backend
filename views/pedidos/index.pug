@@ -1,0 +1,36 @@
+extends ../layout
+
+block content
+  h2 Lista de Pedidos
+
+  a.btn(href="/pedidos/nuevo") + Nuevo Pedido
+
+  table
+    thead
+      tr
+        th ID
+        th Fecha
+        th CUIT Cliente
+        th Cliente
+        th Estado
+        th Items
+        th Total
+        th Acciones
+    tbody
+      each pedido in pedidos
+        tr
+          td= pedido.id
+          td= pedido.fecha
+          td= pedido.cuitCliente
+          td= pedido.nombreCliente
+          td
+            span(style=`padding: 0.25rem 0.5rem; border-radius: 0.25rem; background-color: ${pedido.estado === 'pendiente' ? '#fef3c7' : pedido.estado === 'aprobado' ? '#d1fae5' : pedido.estado === 'cancelado' ? '#fee2e2' : '#e0e7ff'}; color: ${pedido.estado === 'pendiente' ? '#92400e' : pedido.estado === 'aprobado' ? '#065f46' : pedido.estado === 'cancelado' ? '#991b1b' : '#3730a3'};`)
+              = pedido.estado
+          td= pedido.cantidadProductos
+          td= "$" + pedido.total
+          td
+            a(href=`/pedidos/${pedido.id}/vista`) Ver
+            |  | 
+            a(href=`/pedidos/editar/${pedido.id}`) Editar
+            |  | 
+            a(href=`/pedidos/eliminar/${pedido.id}`, style="color: red;") Eliminar
