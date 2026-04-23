@@ -1,0 +1,35 @@
+extends ../layout
+
+block content
+  h2 Nuevo Producto
+
+  form(method="POST", action="/productos")
+
+    label Nombre:
+    input(type="text", name="nombre", required)
+    br
+    br
+
+    label Descripcion:
+    input(type="text", name="descripcion")
+    br
+    br
+
+    label Precio:
+    input(type="number", name="precio", step="0.01", required)
+    br
+    br
+
+    label Stock:
+    input(type="number", name="stock", required)
+    br
+    br
+
+    label Stock Mínimo:
+    input(type="number", name="stock_minimo", required)
+    br
+    br
+
+    button(type="submit") Guardar
+
+  a(href="/productos/vista") Volver

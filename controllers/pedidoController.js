@@ -14,8 +14,13 @@ const leerArchivo = (ruta) => {
     }
 };
 
-const escribirArchivo = (ruta, datos) => {
+const guardarPedidos = (ruta, datos) => {
     fs.writeFileSync(ruta, JSON.stringify(datos, null, 2));
+};
+
+const buscarPedidoPorIdInterno = (id) => {
+    const pedidos = leerPedidos();
+    return pedidos.find((p) => p.id === parseInt(id));
 };
 
 const leerPedidos = () => leerArchivo(rutaArchivo);
@@ -34,10 +39,11 @@ const validarStock = (productosPedido) => {
 
     for (const item of productosPedido) {
         const idProducto = parseInt(item.idProducto);
+        const cantidad = parseInt(item.cantidad);
         const producto = productos.find(p => p.id == idProducto);
         if (!producto) {
             errores.push(`Producto ID ${item.idProducto} no existe`);
-        } else if (producto.stock < item.cantidad) {
+        } else if (parseInt(producto.stock) < cantidad) {
             errores.push(`Stock insuficiente para "${producto.nombre}" (disponible: ${producto.stock}, solicitado: ${item.cantidad})`);
         }
     }
@@ -49,12 +55,13 @@ const descontarStock = (productosPedido) => {
 
     for (const item of productosPedido) {
         const idProducto = parseInt(item.idProducto);
+        const cantidad = parseInt(item.cantidad);
         const producto = productos.find(p => p.id == idProducto);
         if (producto) {
-            producto.stock -= item.cantidad;
+            producto.stock = parseInt(producto.stock) - cantidad;
         }
     }
-    escribirArchivo(rutaProductos, productos);
+    guardarPedidos(rutaProductos, productos);
 };
 
 const restituirStock = (productosPedido) => {
@@ -62,12 +69,13 @@ const restituirStock = (productosPedido) => {
 
     for (const item of productosPedido) {
         const idProducto = parseInt(item.idProducto);
+        const cantidad = parseInt(item.cantidad);
         const producto = productos.find(p => p.id == idProducto);
         if (producto) {
-            producto.stock += item.cantidad;
+            producto.stock = parseInt(producto.stock) + cantidad;
         }
     }
-    escribirArchivo(rutaProductos, productos);
+    guardarPedidos(rutaProductos, productos);
 };
 
 const obtenerPedidos = (req, res) => {
@@ -115,16 +123,24 @@ const crearPedido = (req, res) => {
 
         descontarStock(productos);
 
-        const nuevoPedido = new Pedido(
-            obtenerNuevoId(pedidos),
-            idCliente,
-            productos,
-            fecha || new Date().toISOString().split("T")[0]
-        );
+        const nuevoPedido = {
+            id: obtenerNuevoId(pedidos),
+            idCliente: idCliente,
+            productos: productos,
+            fecha: fecha || new Date().toISOString().split("T")[0],
+            estado: "pendiente",
+            total: productos.reduce((sum, prod) => {
+                return sum + (parseInt(prod.cantidad) * parseFloat(prod.precio));
+            }, 0)
+        };
 
         pedidos.push(nuevoPedido);
-        escribirArchivo(rutaArchivo, pedidos);
-        res.status(201).json(nuevoPedido);
+        guardarPedidos(rutaArchivo, pedidos);
+        if (req.xhr || req.headers.accept?.includes("json")) {
+            res.status(201).json(nuevoPedido);
+        } else {
+            res.redirect("/pedidos/vista");
+        }
     } catch (error) {
         res.status(500).json({ message: "Error al crear el pedido" });
     }
@@ -151,21 +167,36 @@ const actualizarPedido = (req, res) => {
         if (req.body.fecha) pedido.fecha = req.body.fecha;
 
         if (req.body.productos) {
-            restituirStock(pedido.productos);
+            const productosAnteriores = pedido.productos.map(p => ({ idProducto: parseInt(p.idProducto), cantidad: parseInt(p.cantidad), precio: parseFloat(p.precio) }));
+            const productosNuevos = req.body.productos.map(p => ({ idProducto: parseInt(p.idProducto), cantidad: parseInt(p.cantidad), precio: parseFloat(p.precio) }));
+            const productosCambiaron = JSON.stringify(productosAnteriores) !== JSON.stringify(productosNuevos);
 
-            const erroresStock = validarStock(req.body.productos);
-            if (erroresStock.length > 0) {
-                descontarStock(pedido.productos);
-                return res.status(400).json({ message: erroresStock.join(", ") });
+            if (productosCambiaron) {
+                restituirStock(pedido.productos);
+
+                const erroresStock = validarStock(req.body.productos);
+                if (erroresStock.length > 0) {
+                    descontarStock(pedido.productos);
+                    return res.status(400).json({ message: erroresStock.join(", ") });
+                }
+
+                pedido.productos = req.body.productos;
+                descontarStock(req.body.productos);
+                const productosCalc = req.body.productos;
+                pedido.total = productosCalc.reduce((sum, prod) => {
+                    return sum + (parseInt(prod.cantidad) * parseFloat(prod.precio));
+                }, 0);
+            } else {
+                pedido.productos = req.body.productos;
             }
-
-            pedido.productos = req.body.productos;
-            descontarStock(req.body.productos);
-            pedido.total = pedido.calcularTotal();
         }
 
-        escribirArchivo(rutaArchivo, pedidos);
-        res.json(pedido);
+        guardarPedidos(rutaArchivo, pedidos);
+        if (req.xhr || req.headers.accept?.includes("json")) {
+            res.json(pedido);
+        } else {
+            res.redirect("/pedidos/vista");
+        }
     } catch (error) {
         res.status(500).json({ message: "Error al actualizar el pedido" });
     }
@@ -186,8 +217,12 @@ const eliminarPedido = (req, res) => {
         }
 
         const nuevosPedidos = pedidos.filter((p) => p.id !== id);
-        escribirArchivo(rutaArchivo, nuevosPedidos);
-        res.json({ message: "Pedido eliminado correctamente" });
+        guardarPedidos(rutaArchivo, nuevosPedidos);
+        if (req.xhr || req.headers.accept?.includes("json")) {
+            res.json({ message: "Pedido eliminado correctamente" });
+        } else {
+            res.redirect("/pedidos/vista");
+        }
     } catch (error) {
         res.status(500).json({ message: "Error al eliminar el pedido" });
     }
@@ -205,14 +240,14 @@ const obtenerPedidoPorIdVista = (req, res) => {
     if (!pedido) {
         return res.status(404).json({ message: "Pedido no encontrado" });
     }
-    res.render("pedidos/detail", { pedido });
+    res.render("pedidos/detalle", { pedido });
 };
 
-const obtenerNuevoPedidoVista = (req, res) => {
+const crearPedidoVista = (req, res) => {
     res.render("pedidos/nuevo");
 };
 
-const obtenerEditarPedidoVista = (req, res) => {
+const actualizarPedidoVista = (req, res) => {
     const id = parseInt(req.params.id);
     const pedidos = leerPedidos();
     const pedido = pedidos.find(p => p.id === id);
@@ -220,6 +255,14 @@ const obtenerEditarPedidoVista = (req, res) => {
         return res.status(404).json({ message: "Pedido no encontrado" });
     }
     res.render("pedidos/editar", { pedido });
+};
+
+const eliminarPedidoVista = (req, res) => {
+    const pedido = buscarPedidoPorIdInterno(req.params.id);
+    if (!pedido) {
+        return res.status(404).json({ message: "Pedido no encontrado" });
+    }
+    res.render("pedidos/eliminar", { pedido });
 };
 
 module.exports = {
@@ -230,6 +273,7 @@ module.exports = {
     eliminarPedido,
     obtenerPedidosVista,
     obtenerPedidoPorIdVista,
-    obtenerNuevoPedidoVista,
-    obtenerEditarPedidoVista,
+    crearPedidoVista,
+    actualizarPedidoVista,
+    eliminarPedidoVista,
 };

@@ -1,0 +1,33 @@
+extends ../layout
+
+block content
+  h2 Eliminar Pedido
+
+  .card
+    p
+      strong ID:
+      | #{pedido.id}
+
+    p
+      strong Cliente:
+      | #{pedido.idCliente}
+
+    p
+      strong Fecha:
+      | #{pedido.fecha}
+
+    p
+      strong Estado:
+      | #{pedido.estado}
+
+    p
+      strong Total:
+      | $#{pedido.total}
+
+    p(style="color: red; margin-top: 1rem;")
+      strong ¿Está seguro que desea eliminar este pedido?
+
+  form(method="POST", action=`/pedidos/${pedido.id}?_method=DELETE`)
+    button(type="submit", style="background-color: red; color: white;") Eliminar
+
+  a.btn(href="/pedidos/vista") Volver

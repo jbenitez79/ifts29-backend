@@ -9,14 +9,20 @@ const {
     eliminarPedido,
     obtenerPedidosVista,
     obtenerPedidoPorIdVista,
-    obtenerNuevoPedidoVista,
-    obtenerEditarPedidoVista,
+    crearPedidoVista,
+    actualizarPedidoVista,
+    eliminarPedidoVista,
 } = require("../controllers/pedidoController");
 
 router.get("/vista", obtenerPedidosVista);
-router.get("/nuevo", obtenerNuevoPedidoVista);
-router.get("/editar/:id", obtenerEditarPedidoVista);
-router.get("/:id/vista", obtenerPedidoPorIdVista);
+router.get("/vista/nuevo", crearPedidoVista);
+router.get("/vista/detalle/:id", obtenerPedidoPorIdVista);
+router.get("/vista/editar/:id", actualizarPedidoVista);
+router.get("/vista/eliminar/:id", eliminarPedidoVista);
+
+router.post("/editar/:id", actualizarPedido);
+router.post("/eliminar/:id", eliminarPedido);
+
 router.get("/", obtenerPedidos);
 router.get("/:id", obtenerPedidoPorId);
 router.post("/", crearPedido);

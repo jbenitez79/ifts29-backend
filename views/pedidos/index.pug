@@ -1,29 +1,30 @@
 extends ../layout
 
 block content
-  h2 Lista de Pedidos
+  div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;")
+    h2 Lista de Pedidos
+    a.btn(href="/pedidos/vista/nuevo") + Agregar Pedido
 
-  a(href="/pedidos/nuevo") Nuevo Pedido
-
-  table(border="1")
-    tr
-      th ID
-      th Cliente ID
-      th Fecha
-      th Estado
-      th Total
-      th Productos
-      th Acciones
-
-    each pedido in pedidos
+  .table-wrapper
+    table
       tr
-        td= pedido.id
-        td= pedido.idCliente
-        td= pedido.fecha
-        td= pedido.estado
-        td= "$" + pedido.total
-        td= pedido.productos.length + " productos"
-        td
-          a(href=`/pedidos/${pedido.id}`) Ver
-          |  | 
-          a(href=`/pedidos/editar/${pedido.id}`) Editar
+        th ID
+        th Cliente
+        th Fecha
+        th Estado
+        th Total
+        th Acciones
+
+      each pedido in pedidos
+        tr
+          td= pedido.id
+          td= pedido.idCliente
+          td= pedido.fecha
+          td
+            span(style=`padding: 0.25rem 0.5rem; border-radius: 0.25rem; background-color: ${pedido.estado === 'pendiente' ? '#fef3c7' : pedido.estado === 'aprobado' ? '#d1fae5' : pedido.estado === 'cancelado' ? '#fee2e2' : '#e0e7ff'}; color: ${pedido.estado === 'pendiente' ? '#92400e' : pedido.estado === 'aprobado' ? '#065f46' : pedido.estado === 'cancelado' ? '#991b1b' : '#3730a3'};`)
+              = pedido.estado
+          td= "$" + pedido.total
+          td(style="display: flex; gap: 0.5rem;")
+            a(href=`/pedidos/vista/detalle/${pedido.id}`) Ver
+            a(href=`/pedidos/vista/editar/${pedido.id}`) Editar
+            a(href=`/pedidos/vista/eliminar/${pedido.id}`) Eliminar

@@ -1,0 +1,32 @@
+extends ../layout
+
+block content
+  div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;")
+    h2 Lista de Productos
+    a.btn(href="/productos/vista/nuevo") + Agregar Producto
+
+  .table-wrapper
+    table
+      tr
+        th ID
+        th Nombre
+        th Descripcion
+        th Precio
+        th Stock
+        th Stock Mínimo
+        th Acciones
+
+      each producto in productos
+        tr
+          td= producto.id
+          td= producto.nombre
+          td= producto.descripcion
+          td= "$" + producto.precio
+          td
+            span(style=`color: ${parseInt(producto.stock) <= parseInt(producto.stock_minimo) ? 'red' : 'green'}`)
+              = producto.stock
+          td= producto.stock_minimo
+          td(style="display: flex; gap: 0.5rem;")
+            a(href=`/productos/vista/detalle/${producto.id}`) Ver
+            a(href=`/productos/vista/editar/${producto.id}`) Editar
+            a(href=`/productos/vista/eliminar/${producto.id}`) Eliminar

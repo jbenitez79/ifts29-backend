@@ -1,0 +1,29 @@
+extends ../layout
+
+block content
+  div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;")
+    h2 Cuentas Corrientes
+    a.btn(href="/cuentas/vista/nuevo") + Nueva Cuenta
+
+  .table-wrapper
+    table
+      tr
+        th ID
+        th Cliente ID
+        th Saldo
+        th Límite Crédito
+        th Estado
+        th Acciones
+
+      each cuenta in cuentas
+        tr
+          td= cuenta.id
+          td= cuenta.idCliente
+          td= "$" + cuenta.saldo.toFixed(2)
+          td= "$" + cuenta.limiteCredito
+          td
+            span(style=`padding: 0.25rem 0.5rem; border-radius: 0.25rem; background-color: ${cuenta.estado === 'activo' ? '#d1fae5' : '#fee2e2'}; color: ${cuenta.estado === 'activo' ? '#065f46' : '#991b1b'};`)
+              = cuenta.estado
+          td(style="display: flex; gap: 0.5rem;")
+            a(href=`/cuentas/vista/detalle/${cuenta.idCliente}`) Ver
+            a(href=`/cuentas/vista/editar/${cuenta.idCliente}`) Editar

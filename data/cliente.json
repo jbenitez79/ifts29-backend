@@ -40,5 +40,19 @@
     "pais": "Argentina",
     "codigoPostal": "1226",
     "fechaNacimiento": "1985-09-25"
+  },
+  {
+    "id": 4,
+    "nombre": "Jose",
+    "apellido": "Perez",
+    "email": "joseperez@gmail.com",
+    "telefono": "1165859878",
+    "cuit": "30705252852",
+    "domicilio": "Calle Falsa 123",
+    "localidad": "CABA",
+    "provincia": "CABA",
+    "pais": "",
+    "codigoPostal": "1002",
+    "fechaNacimiento": "1976-06-10"
   }
 ]

@@ -1,0 +1,42 @@
+extends ../layout
+
+block content
+  h2 Detalle Pedido
+
+  .card
+    p
+      strong ID:
+      | #{pedido.id}
+
+    p
+      strong Cliente:
+      | #{pedido.idCliente}
+
+    p
+      strong Fecha:
+      | #{pedido.fecha}
+
+    p
+      strong Estado:
+      span(style=`padding: 0.25rem 0.5rem; border-radius: 0.25rem; background-color: ${pedido.estado === 'pendiente' ? '#fef3c7' : pedido.estado === 'aprobado' ? '#d1fae5' : pedido.estado === 'cancelado' ? '#fee2e2' : '#e0e7ff'}; color: ${pedido.estado === 'pendiente' ? '#92400e' : pedido.estado === 'aprobado' ? '#065f46' : pedido.estado === 'cancelado' ? '#991b1b' : '#3730a3'};`)
+        = pedido.estado
+
+    p
+      strong Total:
+      | $#{pedido.total}
+
+    h3(style="margin-top: 1.5rem;") Productos
+
+    each prod in pedido.productos
+      p
+        strong ID Producto:
+        | #{prod.idProducto}
+      p
+        strong Cantidad:
+        | #{prod.cantidad}
+      p
+        strong Precio:
+        | $#{prod.precio}
+      hr
+
+  a.btn(href="/pedidos/vista") Volver

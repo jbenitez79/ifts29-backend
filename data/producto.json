@@ -4,7 +4,7 @@
     "nombre": "Jabón líquido concentrado",
     "descripcion": "Jabón líquido Zorro para diluir rinde 3L",
     "precio": 3500,
-    "stock": 461,
+    "stock": 50,
     "stock_minimo": 10
   },
   {
@@ -12,7 +12,7 @@
     "nombre": "Lavandina 1L",
     "descripcion": "Lavandina Ayudín 1L",
     "precio": 3000,
-    "stock": 100,
+    "stock": 80,
     "stock_minimo": 10
   },
   {

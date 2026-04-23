@@ -1,30 +1,49 @@
 [
   {
-    "id": 1,
-    "idCliente": "1",
-    "productos": [
-      {
-        "idProducto": "2",
-        "cantidad": "3",
-        "precio": "3500"
-      }
-    ],
-    "fecha": "2026-04-22",
-    "estado": "entregado",
-    "total": 10500
-  },
-  {
     "id": 2,
     "idCliente": "1",
     "productos": [
       {
         "idProducto": "2",
-        "cantidad": "1",
+        "cantidad": "10",
         "precio": "3500"
       }
     ],
     "fecha": "2026-04-21",
-    "estado": "pendiente",
-    "total": 3500
+    "estado": "aprobado",
+    "total": 35000
+  },
+  {
+    "id": 3,
+    "idCliente": "2",
+    "productos": [
+      {
+        "idProducto": "2",
+        "cantidad": "30",
+        "precio": "3500"
+      }
+    ],
+    "fecha": "2026-04-22",
+    "estado": "enviado",
+    "total": 105000
+  },
+  {
+    "id": 4,
+    "idCliente": "3",
+    "productos": [
+      {
+        "idProducto": "344",
+        "cantidad": "20",
+        "precio": "3000"
+      },
+      {
+        "idProducto": "1499",
+        "cantidad": "30",
+        "precio": "2000"
+      }
+    ],
+    "fecha": "2026-04-20",
+    "estado": "enviado",
+    "total": 120000
   }
 ]

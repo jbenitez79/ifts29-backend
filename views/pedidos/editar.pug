@@ -1,19 +1,17 @@
-extends ../pedidos/layout
+extends ../layout
 
 block content
-  h2 Editar Pedido ##{pedido.id}
+  h2 Editar Pedido
 
   form(method="POST", action=`/pedidos/${pedido.id}?_method=PUT`)
-    
-    label Cliente ID:
-    input(type="number", name="idCliente", value=pedido.idCliente, required)
 
+    label Cliente ID:
+    input(type="number", name="idCliente", value=pedido.idCliente)
     br
     br
 
     label Fecha:
     input(type="date", name="fecha", value=pedido.fecha)
-
     br
     br
 
@@ -24,51 +22,26 @@ block content
       option(value="enviado", selected=pedido.estado === "enviado") Enviado
       option(value="entregado", selected=pedido.estado === "entregado") Entregado
       option(value="cancelado", selected=pedido.estado === "cancelado") Cancelado
-
     br
     br
 
     h3 Productos
-    div#productos-container
-      each prod, index in pedido.productos
-        div.producto-item
-          label ID Producto:
-          input(type="number", name=`productos[${index}][idProducto]`, value=prod.idProducto, required)
-          
-          label Cantidad:
-          input(type="number", name=`productos[${index}][cantidad]`, value=prod.cantidad, min="1", required)
-          
-          label Precio:
-          input(type="number", name=`productos[${index}][precio]`, value=prod.precio, step="0.01", required)
+    each prod, index in pedido.productos
+      label ID Producto:
+      input(type="number", name=`productos[${index}][idProducto]`, value=prod.idProducto)
+      br
+      br
 
-    button(type="button", onclick="agregarProducto()") + Agregar Producto
+      label Cantidad:
+      input(type="number", name=`productos[${index}][cantidad]`, value=prod.cantidad)
+      br
+      br
 
-    br
-    br
+      label Precio:
+      input(type="number", name=`productos[${index}][precio]`, value=prod.precio, step="0.01")
+      br
+      br
 
-    button(type="submit") Actualizar Pedido
+    button(type="submit") Guardar
 
-  hr
-
-  form(method="POST", action=`/pedidos/${pedido.id}?_method=DELETE`, onsubmit="return confirm('¿Está seguro que desea eliminar este pedido?')")
-    button(type="submit", style="background-color: red; color: white;") Eliminar Pedido
-
-  script.
-    let contador = #{pedido.productos.length};
-    function agregarProducto() {
-      const container = document.getElementById('productos-container');
-      const div = document.createElement('div');
-      div.className = 'producto-item';
-      div.innerHTML = `
-        <label>ID Producto:</label>
-        <input type="number" name="productos[${contador}][idProducto]" required>
-        
-        <label>Cantidad:</label>
-        <input type="number" name="productos[${contador}][cantidad]" min="1" required>
-        
-        <label>Precio:</label>
-        <input type="number" name="productos[${contador}][precio]" step="0.01" required>
-      `;
-      container.appendChild(div);
-      contador++;
-    }
+  a(href="/pedidos/vista") Volver

@@ -1,31 +1,29 @@
 const fs = require("fs");
 const path = require("path");
-const Producto = require("../models/Productos");
 const rutaArchivo = path.join(__dirname, "../data/producto.json");
 
-// Función auxiliar para leer los productos
 const leerProductos = () => {
     try {
         const data = fs.readFileSync(rutaArchivo, "utf8");
         return JSON.parse(data);
     } catch (error) {
-        console.error("Error al leer el archivo de productos:", error);
         return [];
     }
 };
 
-// Obtener todos los productos
+const guardarProductos = (productos) => {
+    fs.writeFileSync(rutaArchivo, JSON.stringify(productos, null, 2));
+};
+
 const obtenerProductos = (req, res) => {
     try {
         const productos = leerProductos();
         res.json(productos);
     } catch (error) {
-        console.error("Error al obtener los productos:", error);
         res.status(500).json({ message: "Error al obtener los productos" });
     }
 };
 
-// Obtener un producto por ID
 const obtenerProductoPorId = (req, res) => {
     try {
         const productos = leerProductos();
@@ -36,74 +34,140 @@ const obtenerProductoPorId = (req, res) => {
         }
         res.json(producto);
     } catch (error) {
-        console.error("Error al leer el archivo de productos:", error);
         res.status(500).json({ message: "Error al obtener el producto" });
     }
 };
 
-// Crear un nuevo producto
 const crearProducto = (req, res) => {
     try {
         const productos = leerProductos();
         const { id, nombre, descripcion, precio, stock, stock_minimo } = req.body;
-        const nuevoProducto = new Producto(id, nombre, descripcion, precio, stock, stock_minimo);
+
+        if (!nombre || !precio) {
+            return res.status(400).json({ message: "Datos incompletos" });
+        }
+
+        const nuevoProducto = {
+            id: parseInt(id) || Math.max(...productos.map(p => p.id), 0) + 1,
+            nombre,
+            descripcion: descripcion || "",
+            precio: parseFloat(precio),
+            stock: parseInt(stock) || 0,
+            stock_minimo: parseInt(stock_minimo) || 0
+        };
+
         productos.push(nuevoProducto);
-        fs.writeFileSync(rutaArchivo, JSON.stringify(productos, null, 2));
-        res.status(201).json(nuevoProducto);
+        guardarProductos(productos);
+
+        if (req.xhr || req.headers.accept?.includes("json")) {
+            res.status(201).json(nuevoProducto);
+        } else {
+            res.redirect("/productos/vista");
+        }
     } catch (error) {
-        console.error("Error al crear el producto:", error);
         res.status(500).json({ message: "Error al crear el producto" });
     }
 };
 
-// Actualizar un producto
 const actualizarProducto = (req, res) => {
     try {
         const productos = leerProductos();
         const id = parseInt(req.params.id);
         const producto = productos.find((p) => p.id === id);
+
         if (!producto) {
             return res.status(404).json({ message: "Producto no encontrado" });
         }
-        producto.nombre = req.body.nombre;
-        producto.descripcion = req.body.descripcion;
-        producto.precio = req.body.precio;
-        producto.stock = req.body.stock;
-        producto.stock_minimo = req.body.stock_minimo;
-        fs.writeFileSync(rutaArchivo, JSON.stringify(productos, null, 2));
-        res.json(producto);
+
+        if (req.body.nombre) producto.nombre = req.body.nombre;
+        if (req.body.descripcion) producto.descripcion = req.body.descripcion;
+        if (req.body.precio) producto.precio = parseFloat(req.body.precio);
+        if (req.body.stock) producto.stock = parseInt(req.body.stock);
+        if (req.body.stock_minimo) producto.stock_minimo = parseInt(req.body.stock_minimo);
+
+        guardarProductos(productos);
+
+        if (req.xhr || req.headers.accept?.includes("json")) {
+            res.json(producto);
+        } else {
+            res.redirect("/productos/vista");
+        }
     } catch (error) {
-        console.error("Error al actualizar el producto:", error);
         res.status(500).json({ message: "Error al actualizar el producto" });
     }
 };
 
-
-// Eliminar un producto
 const eliminarProducto = (req, res) => {
     try {
         const productos = leerProductos();
         const id = parseInt(req.params.id);
-        const nuevosProductos = productos.filter((p) => p.id !== id);
-        if (productos.length === nuevosProductos.length) {
+        const producto = productos.find((p) => p.id === id);
+
+        if (!producto) {
             return res.status(404).json({ message: "Producto no encontrado" });
         }
-        fs.writeFileSync(rutaArchivo, JSON.stringify(nuevosProductos, null, 2));
-        res.json(nuevosProductos);
+
+        const nuevosProductos = productos.filter((p) => p.id !== id);
+        guardarProductos(nuevosProductos);
+
+        if (req.xhr || req.headers.accept?.includes("json")) {
+            res.json({ message: "Producto eliminado correctamente" });
+        } else {
+            res.redirect("/productos/vista");
+        }
     } catch (error) {
-        console.error("Error al eliminar el producto:", error);
         res.status(500).json({ message: "Error al eliminar el producto" });
     }
 };
-const obtenerProductoVista = (req, res) => {
+
+const obtenerProductosVista = (req, res) => {
     const productos = leerProductos();
-    res.render("productos", { productos });
+    res.render("productos/index", { productos });
 };
+
+const obtenerProductoPorIdVista = (req, res) => {
+    const id = parseInt(req.params.id);
+    const productos = leerProductos();
+    const producto = productos.find(p => p.id === id);
+    if (!producto) {
+        return res.status(404).json({ message: "Producto no encontrado" });
+    }
+    res.render("productos/detail", { producto });
+};
+
+const crearProductoVista = (req, res) => {
+    res.render("productos/nuevo");
+};
+
+const editarProductoVista = (req, res) => {
+    const id = parseInt(req.params.id);
+    const productos = leerProductos();
+    const producto = productos.find(p => p.id === id);
+    if (!producto) {
+        return res.status(404).json({ message: "Producto no encontrado" });
+    }
+    res.render("productos/editar", { producto });
+};
+
+const eliminarProductoVista = (req, res) => {
+    const id = parseInt(req.params.id);
+    const productos = leerProductos();
+    const producto = productos.find(p => p.id === id);
+    if (!producto) {
+        return res.status(404).json({ message: "Producto no encontrado" });
+    }
+    res.render("productos/eliminar", { producto });
+};
+
 module.exports = {
     obtenerProductos,
     obtenerProductoPorId,
     crearProducto,
     actualizarProducto,
     eliminarProducto,
-    obtenerProductoVista,
+    obtenerProductosVista,
+    obtenerProductoPorIdVista,
+    crearProductoVista,
+    editarProductoVista,
+    eliminarProductoVista,
 };
