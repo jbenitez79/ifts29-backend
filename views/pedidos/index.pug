@@ -3,7 +3,7 @@ extends ../layout
 block content
   h2 Lista de Pedidos
 
-  a.btn(href="/pedidos/nuevo") + Nuevo Pedido
+  a.btn(href="/pedidos/vista/nuevo") + Nuevo Pedido
 
   table
     thead
@@ -29,8 +29,8 @@ block content
           td= pedido.cantidadProductos
           td= "$" + pedido.total
           td
-            a(href=`/pedidos/${pedido.id}/vista`) Ver
+            a(href=`/pedidos/vista/detalle/${pedido.id}`) Ver
             |  | 
-            a(href=`/pedidos/editar/${pedido.id}`) Editar
+            a(href=`/pedidos/vista/editar/${pedido.id}`) Editar
             |  | 
-            a(href=`/pedidos/eliminar/${pedido.id}`, style="color: red;") Eliminar
+            a(href=`/pedidos/vista/eliminar/${pedido.id}`, style="color: red;") Eliminar
