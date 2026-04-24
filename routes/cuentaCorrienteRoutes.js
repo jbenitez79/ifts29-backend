@@ -12,12 +12,14 @@ const {
     obtenerDetalleCuentaVista,
     crearCuentaVista,
     editarCuentaVista,
+    eliminarCuentaVista,
 } = require("../controllers/cuentaCorrienteController");
 
 router.get("/vista", obtenerCuentasVista);
 router.get("/vista/nuevo", crearCuentaVista);
 router.get("/vista/editar/:idCliente", editarCuentaVista);
 router.get("/vista/detalle/:idCliente", obtenerDetalleCuentaVista);
+router.get("/vista/eliminar/:idCliente", eliminarCuentaVista);
 
 router.get("/", obtenerCuentas);
 router.get("/cliente/:idCliente", obtenerCuentaPorClienteId);

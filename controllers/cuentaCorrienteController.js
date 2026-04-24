@@ -187,7 +187,7 @@ const obtenerDetalleCuentaVista = (req, res) => {
 
     if (!cuenta) return res.status(404).send("Cuenta no encontrada");
 
-    res.render("cuentas/detail", { cuenta });
+    res.render("cuentas/detalle", { cuenta });
 };
 
 const crearCuentaVista = (req, res) => {
@@ -204,6 +204,16 @@ const editarCuentaVista = (req, res) => {
     res.render("cuentas/editar", { cuenta });
 };
 
+const eliminarCuentaVista = (req, res) => {
+    const cuentas = leerCuentas();
+    const idCliente = parseInt(req.params.idCliente);
+    const cuenta = cuentas.find(c => c.idCliente === idCliente);
+
+    if (!cuenta) return res.status(404).send("Cuenta no encontrada");
+
+    res.render("cuentas/eliminar", { cuenta });
+};
+
 module.exports = {
     obtenerCuentas,
     obtenerCuentaPorClienteId,
@@ -215,4 +225,5 @@ module.exports = {
     obtenerDetalleCuentaVista,
     crearCuentaVista,
     editarCuentaVista,
+    eliminarCuentaVista,
 };

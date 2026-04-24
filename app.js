@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 3000;
 
 
 const clienteRoutes = require("./routes/clienteRoutes");
+const proveedorRoutes = require("./routes/proveedorRoutes");
 const pedidoRoutes = require("./routes/pedidoRoutes");
 const productoRoutes = require("./routes/productoRoutes");
 
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
     res.render("index");
 });
 app.use("/clientes", clienteRoutes);
+app.use("/proveedores", proveedorRoutes);
 app.use("/pedidos", pedidoRoutes);
 app.use("/productos", productoRoutes);
 app.use("/cuentas", cuentaCorrienteRoutes);
