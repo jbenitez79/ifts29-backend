@@ -1,0 +1,43 @@
+extends ../layout
+
+block content
+  h2 Detalle del Proveedor
+
+  p
+    strong ID:
+    |  #{proveedor.id}
+  p
+    strong Nombre:
+    |  #{proveedor.nombre}
+  p
+    strong CUIT:
+    |  #{proveedor.cuit}
+  p
+    strong Telefono:
+    |  #{proveedor.telefono}
+  p
+    strong Email:
+    |  #{proveedor.email}
+  p
+    strong Domicilio:
+    |  #{proveedor.domicilio}
+  p
+    strong Localidad:
+    |  #{proveedor.localidad}
+  p
+    strong Provincia:
+    |  #{proveedor.provincia}
+  p
+    strong Pais:
+    |  #{proveedor.pais}
+  p
+    strong Rubro:
+    |  #{proveedor.rubro}
+  p
+    strong Condicion de Pago:
+    |  #{proveedor.condicionDePago}
+  p
+    strong Activo:
+    |  #{proveedor.activo ? 'Sí' : 'No'}
+
+  a(href="/proveedores") Volver
