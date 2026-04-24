@@ -1,0 +1,33 @@
+extends ../layout
+
+block content
+  h2 Eliminar Producto
+
+  .card
+    p
+      strong ID:
+      | #{producto.id}
+
+    p
+      strong Nombre:
+      | #{producto.nombre}
+
+    p
+      strong Descripcion:
+      | #{producto.descripcion}
+
+    p
+      strong Precio:
+      | $#{producto.precio}
+
+    p
+      strong Stock:
+      | #{producto.stock}
+
+    p(style="color: red; margin-top: 1rem;")
+      strong ¿Está seguro que desea eliminar este producto?
+
+  form(method="POST", action=`/productos/${producto.id}?_method=DELETE`)
+    button(type="submit", style="background-color: red; color: white;") Eliminar
+
+  a.btn(href="/productos/vista") Volver
