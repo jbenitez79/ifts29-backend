@@ -3,15 +3,17 @@ const express = require("express");
 const methodOverride = require("method-override");
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const connectDB = require("./config/db");
 
+const PORT = process.env.PORT || 3000;
 
 const clienteRoutes = require("./routes/clienteRoutes");
 const proveedorRoutes = require("./routes/proveedorRoutes");
 const pedidoRoutes = require("./routes/pedidoRoutes");
 const productoRoutes = require("./routes/productoRoutes");
-
 const cuentaCorrienteRoutes = require("./routes/cuentaCorrienteRoutes");
+
+connectDB();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
