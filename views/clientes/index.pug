@@ -24,7 +24,7 @@ block content
 
       each cliente in clientes
         tr
-          td= cliente.id
+          td= cliente._id
           td= cliente.nombre
           td= cliente.apellido
           td= cliente.email
@@ -35,8 +35,8 @@ block content
           td= cliente.provincia
           td= cliente.pais
           td= cliente.codigoPostal
-          td= cliente.fechaNacimiento
+          td= cliente.fechaNacimiento.toLocaleDateString('es-AR')
           td(style="display:flex; gap:0.5rem;")
-            a(href=`/clientes/vista/detalle/${cliente.id}`) Ver
-            a(href=`/clientes/vista/editar/${cliente.id}`) Editar
-            a(href=`/clientes/vista/eliminar/${cliente.id}`) Eliminar
+            a(href=`/clientes/vista/detalle/${cliente._id}`) Ver
+            a(href=`/clientes/vista/editar/${cliente._id}`) Editar
+            a(href=`/clientes/vista/eliminar/${cliente._id}`) Eliminar

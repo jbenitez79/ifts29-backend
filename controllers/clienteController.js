@@ -1,80 +1,51 @@
-const fs = require("fs");
-const path = require("path");
 const Cliente = require("../models/Cliente");
-const rutaArchivo = path.join(__dirname, "../data/cliente.json");
 
 // ==========================================
 // 1. LÓGICA INTERNA DE NEGOCIO (Capa de Servicios)
 // ==========================================
-const leerClientes = () => {
+const buscarClientePorCuit = async (req, res) => {
     try {
-        const data = fs.readFileSync(rutaArchivo, "utf8");
-        return JSON.parse(data);
-    } catch (error) {
-        console.error("Error al leer el archivo de clientes:", error);
-        return [];
-    }
-};
-
-const guardarClientes = (clientes) => {
-    fs.writeFileSync(rutaArchivo, JSON.stringify(clientes, null, 2));
-};
-
-const buscarClientePorIdInterno = (id) => {
-    const clientes = leerClientes();
-    return clientes.find((c) => c.id === parseInt(id));
-};
-
-const buscarClientePorCuit = (req, res) => {
-    try {
-        const clientes = leerClientes();
-        const cuit = req.params.cuit;
-        const cliente = clientes.find((c) => String(c.cuit) === String(cuit));
+        const cliente = await Cliente.findOne({ cuit: req.params.cuit });
+        
         if (!cliente) {
             return res.status(404).json({ message: "Cliente no encontrado" });
         }
         res.json(cliente);
     } catch (error) {
         console.error("Error al buscar cliente por CUIT:", error);
-        res.status(500).json({ message: "Error al buscar cliente" });
+        res.status(500).json({ message: error.message || "Error al buscar cliente por CUIT" });
     }
 };
 
 // ==========================================
 // 2. CONTROLADORES JSON (Endpoints de la API)
 // ==========================================
-const obtenerClientes = (req, res) => {
+const obtenerClientes = async (req, res) => {
     try {
-        res.json(leerClientes());
+        const clientes = await Cliente.find();
+        res.json(clientes);
     } catch (error) {
         console.error("Error al obtener los clientes:", error);
         res.status(500).json({ message: "Error al obtener los clientes" });
     }
 };
 
-const obtenerClientePorId = (req, res) => {
+const obtenerClientePorId = async (req, res) => {
     try {
-        const cliente = buscarClientePorIdInterno(req.params.id);
+        const cliente = await Cliente.findById(req.params.id);
         if (!cliente) {
             return res.status(404).json({ message: "Cliente no encontrado" });
         }
         res.json(cliente);
     } catch (error) {
-        console.error("Error al leer el archivo de clientes:", error);
+        console.error("Error al obtener el cliente:", error);
         res.status(500).json({ message: "Error al obtener el cliente" });
     }
 };
 
-const crearCliente = (req, res) => {
+const crearCliente = async(req, res) => {
     try {
-        const clientes = leerClientes();
-        const { nombre, apellido, email, telefono, cuit, domicilio, localidad, provincia, pais, codigoPostal, fechaNacimiento } = req.body;
-        const nuevoId = clientes.length > 0 ? Math.max(...clientes.map(c => c.id)) + 1 : 1;
-        const nuevoCliente = new Cliente(nuevoId, nombre, apellido, email, telefono, cuit, domicilio, localidad, provincia, pais, codigoPostal, fechaNacimiento);
-        
-        clientes.push(nuevoCliente);
-        guardarClientes(clientes);
-        
+        const nuevoCliente = await Cliente.create(req.body);
         res.status(201).json(nuevoCliente);
     } catch (error) {
         console.error("Error al crear el cliente:", error);
@@ -82,79 +53,138 @@ const crearCliente = (req, res) => {
     }
 };
 
-const actualizarCliente = (req, res) => {
+const actualizarCliente = async (req, res) => {
     try {
-        const clientes = leerClientes();
-        const id = parseInt(req.params.id);
-        const index = clientes.findIndex((c) => c.id === id);
+        const clienteActualizado = await Cliente.findByIdAndUpdate(req.params.id, req.body,
+            {
+                new: true,
+                runValidators: true,
+            }
+        );
         
-        if (index === -1) {
+        if (!clienteActualizado) {
             return res.status(404).json({ message: "Cliente no encontrado" });
         }
 
-        // Actualizar datos
-        clientes[index] = { ...clientes[index], ...req.body };
-        guardarClientes(clientes);
-        
-        res.json(clientes[index]);
+        res.json(clienteActualizado);
     } catch (error) {
         console.error("Error al actualizar el cliente:", error);
-        res.status(500).json({ message: "Error al actualizar el cliente" });
+        res.status(500).json({ message: error.message || "Error al actualizar el cliente" });
     }
 };
 
-const eliminarCliente = (req, res) => {
+const eliminarCliente = async (req, res) => {
     try {
-        const clientes = leerClientes();
-        const id = parseInt(req.params.id);
-        const nuevosClientes = clientes.filter((c) => c.id !== id);
+        const clienteEliminado = await Cliente.findByIdAndDelete(req.params.id);
         
-        if (clientes.length === nuevosClientes.length) {
+        if (!clienteEliminado) {
             return res.status(404).json({ message: "Cliente no encontrado" });
         }
         
-        guardarClientes(nuevosClientes);
-        res.json({ message: "Cliente eliminado", clientes: nuevosClientes });
+        res.json({ message: "Cliente eliminado" });
     } catch (error) {
         console.error("Error al eliminar el cliente:", error);
-        res.status(500).json({ message: "Error al eliminar el cliente" });
+        res.status(500).json({ message: error.message || "Error al eliminar el cliente" });
     }
 };
 
 // ==========================================
 // 3. CONTROLADORES DE VISTAS PUG (Renderizado HTML)
 // ==========================================
-const obtenerClienteVista = (req, res) => {
-    const clientes = leerClientes();
-    res.render("clientes/index", { clientes });
+const obtenerClienteVista = async (req, res) => {
+    try {
+        const clientes = await Cliente.find().lean();
+        res.render("clientes/index", { clientes });
+    } catch (error) {
+        console.error("Error al obtener los clientes:", error);
+        res.status(500).send( "Error al obtener los clientes" );
+    }
 };
 
 const crearClienteVista = (req, res) => {
-    res.render("clientes/nuevo");
+        res.render("clientes/nuevo");
+    };
+
+const crearClienteVistaPost = async (req, res) => {
+    try {
+       await Cliente.create(req.body);
+        res.redirect("/clientes/vista");
+    } catch (error) {
+        console.error("Error al crear el cliente:", error);
+        res.status(500).send( "Error al crear el cliente" );
+    }
 };
 
-const obtenerClienteVistaPorId = (req, res) => {
-    const cliente = buscarClientePorIdInterno(req.params.id);
-    if (!cliente) {
-        return res.status(404).json({ message: "Cliente no encontrado" });
+const obtenerClienteVistaPorId = async (req, res) => {
+    try {
+        const cliente = await Cliente.findById(req.params.id).lean();
+        if (!cliente) {
+            return res.status(404).send( "Cliente no encontrado" );
+        }
+        res.render("clientes/detalle", { cliente });
+    } catch (error) {
+        console.error("Error al obtener el cliente:", error);
+        res.status(500).send( "Error al obtener el cliente" );
     }
-    res.render("clientes/detalle", { cliente });
 };
 
-const actualizarClienteVista = (req, res) => {
-    const cliente = buscarClientePorIdInterno(req.params.id);
-    if (!cliente) {
-        return res.status(404).json({ message: "Cliente no encontrado" });
+const actualizarClienteVista = async (req, res) => {
+    try {
+        const cliente = await Cliente.findById(req.params.id).lean();
+        if (!cliente) {
+            return res.status(404).send( "Cliente no encontrado" );
+        }
+        res.render("clientes/editar", { cliente });
+    } catch (error) {
+        console.error("Error al obtener el cliente:", error);
+        res.status(500).send( "Cliente no encontrado" );
     }
-    res.render("clientes/editar", { cliente });
 };
 
-const eliminarClienteVista = (req, res) => {
-    const cliente = buscarClientePorIdInterno(req.params.id);
-    if (!cliente) {
-        return res.status(404).json({ message: "Cliente no encontrado" });
+const actualizarClienteVistaPost = async (req, res) => {
+    try {
+        const clienteActualizado = await Cliente.findByIdAndUpdate(req.params.id, req.body,
+            {
+                new: true,
+                runValidators: true,
+            }
+        );
+        
+        if (!clienteActualizado) {
+            return res.status(404).send( "Cliente no encontrado" );
+        }
+
+        res.redirect("/clientes/vista");
+    } catch (error) {
+        console.error("Error al actualizar el cliente:", error);
+        res.status(500).send( "Error al actualizar el cliente" );
     }
-    res.render("clientes/eliminar", { cliente });
+};
+
+const eliminarClienteVista = async (req, res) => {
+    try {
+        const cliente = await Cliente.findById(req.params.id).lean();
+        if (!cliente) {
+            return res.status(404).send( "Cliente no encontrado" );
+        }
+        res.render("clientes/eliminar", { cliente });
+    } catch (error) {
+        console.error("Error al obtener el cliente:", error);
+        res.status(500).send( "Error al obtener el cliente" );
+    }
+};
+
+const eliminarClienteVistaPost = async (req, res) => {
+    try {
+        const clienteEliminado = await Cliente.findByIdAndDelete(req.params.id);    
+        if (!clienteEliminado) {
+            return res.status(404).send( "Cliente no encontrado" );
+        }
+        res.redirect("/clientes/vista");
+    } catch (error) {
+        console.error("Error al eliminar el cliente:", error);
+        res.status(500).send( "Error al eliminar el cliente" );
+    }
 };
 
 module.exports = {
@@ -168,7 +198,10 @@ module.exports = {
     // VISTAS
     obtenerClienteVista,
     crearClienteVista,
+    crearClienteVistaPost,
     obtenerClienteVistaPorId,
     actualizarClienteVista,
-    eliminarClienteVista
+    actualizarClienteVistaPost,
+    eliminarClienteVista,
+    eliminarClienteVistaPost
 };

@@ -3,7 +3,7 @@ extends ../layout
 block content
   h2 Editar cliente
 
-  form(method="POST", action=`/clientes/editar/${cliente.id}`)
+  form(method="POST", action=`/clientes/editar/${cliente._id}`)
     label Nombre:
     input(type="text", name="nombre", value=cliente.nombre)
     br
@@ -55,7 +55,8 @@ block content
     br
 
     label Fecha de Nacimiento:
-    input(type="date", name="fechaNacimiento", value=cliente.fechaNacimiento)
+    input(type="date", name="fechaNacimiento", value=cliente.fechaNacimiento ? cliente.fechaNacimiento.toISOString().split('T')[0]
+    : '')
     br
     br
 
