@@ -6,7 +6,7 @@ block content
   .card
     p
       strong ID:
-      | #{producto.id}
+      | #{producto._id}
 
     p
       strong Nombre:
@@ -27,7 +27,7 @@ block content
     p(style="color: red; margin-top: 1rem;")
       strong ¿Está seguro que desea eliminar este producto?
 
-  form(method="POST", action=`/productos/${producto.id}?_method=DELETE`)
+  form(method="POST", action=`/productos/eliminar/${producto._id}`)
     button(type="submit", style="background-color: red; color: white;") Eliminar
 
   a.btn(href="/productos/vista") Volver

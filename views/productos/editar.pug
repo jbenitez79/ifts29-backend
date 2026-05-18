@@ -3,7 +3,7 @@ extends ../layout
 block content
   h2 Editar Producto
 
-  form(method="POST", action=`/productos/${producto.id}?_method=PUT`)
+  form(method="POST", action=`/productos/editar/${producto._id}`)
 
     label Nombre:
     input(type="text", name="nombre", value=producto.nombre, required)
