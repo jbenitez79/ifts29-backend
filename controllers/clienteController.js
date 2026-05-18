@@ -1,23 +1,6 @@
 const Cliente = require("../models/Cliente");
 
 // ==========================================
-// 1. LÓGICA INTERNA DE NEGOCIO (Capa de Servicios)
-// ==========================================
-const buscarClientePorCuit = async (req, res) => {
-    try {
-        const cliente = await Cliente.findOne({ cuit: req.params.cuit });
-        
-        if (!cliente) {
-            return res.status(404).json({ message: "Cliente no encontrado" });
-        }
-        res.json(cliente);
-    } catch (error) {
-        console.error("Error al buscar cliente por CUIT:", error);
-        res.status(500).json({ message: error.message || "Error al buscar cliente por CUIT" });
-    }
-};
-
-// ==========================================
 // 2. CONTROLADORES JSON (Endpoints de la API)
 // ==========================================
 const obtenerClientes = async (req, res) => {
@@ -43,6 +26,20 @@ const obtenerClientePorId = async (req, res) => {
     }
 };
 
+const buscarClientePorCuit = async (req, res) => {
+    try {
+        const cliente = await Cliente.findOne({ cuit: req.params.cuit });
+        
+        if (!cliente) {
+            return res.status(404).json({ message: "Cliente no encontrado" });
+        }
+        res.json(cliente);
+    } catch (error) {
+        console.error("Error al buscar cliente por CUIT:", error);
+        res.status(500).json({ message: error.message || "Error al buscar cliente por CUIT" });
+    }
+};
+
 const crearCliente = async(req, res) => {
     try {
         const nuevoCliente = await Cliente.create(req.body);
@@ -57,7 +54,7 @@ const actualizarCliente = async (req, res) => {
     try {
         const clienteActualizado = await Cliente.findByIdAndUpdate(req.params.id, req.body,
             {
-                new: true,
+                returnDocument: "after",
                 runValidators: true,
             }
         );
@@ -137,7 +134,7 @@ const actualizarClienteVista = async (req, res) => {
         res.render("clientes/editar", { cliente });
     } catch (error) {
         console.error("Error al obtener el cliente:", error);
-        res.status(500).send( "Cliente no encontrado" );
+        res.status(500).send( "Error al obtener el cliente" );
     }
 };
 
@@ -145,7 +142,7 @@ const actualizarClienteVistaPost = async (req, res) => {
     try {
         const clienteActualizado = await Cliente.findByIdAndUpdate(req.params.id, req.body,
             {
-                new: true,
+                returnDocument: "after",
                 runValidators: true,
             }
         );
