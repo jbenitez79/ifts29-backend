@@ -3,10 +3,13 @@ extends ../layout
 block content
   h2 Nueva Cuenta Corriente
 
-  form(method="POST", action="/cuentas")
+  form(method="POST", action="/cuentas/vista/nuevo")
 
-    label Cliente ID:
-    input(type="number", name="idCliente", required)
+    label Cliente:
+    select(name="idCliente", required)
+      option(value="") Seleccionar cliente...
+      each cliente in clientes
+        option(value=cliente._id) #{cliente.nombre} #{cliente.apellido} - CUIT: #{cliente.cuit}
     br
     br
 

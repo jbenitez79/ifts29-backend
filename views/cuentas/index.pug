@@ -9,7 +9,8 @@ block content
     table
       tr
         th ID Cuenta
-        th ID Cliente
+        th Cliente
+        th CUIT
         th Saldo Actual
         th Límite Crédito
         th Estado
@@ -17,15 +18,16 @@ block content
 
       each cuenta in cuentas
         tr
-          td= cuenta.id
-          td= cuenta.idCliente
+          td= cuenta._id
+          td= cuenta.cliente ? cuenta.cliente.nombre + ' ' + cuenta.cliente.apellido : '—'
+          td= cuenta.cliente ? cuenta.cliente.cuit : '—'
           td= "$" + cuenta.saldo.toFixed(2)
           td= "$" + cuenta.limiteCredito
           td
             span(style=`padding: 0.25rem 0.5rem; border-radius: 0.25rem; background-color: ${cuenta.estado === 'activo' ? '#d1fae5' : '#fee2e2'}; color: ${cuenta.estado === 'activo' ? '#065f46' : '#991b1b'};`)
               = cuenta.estado
           td(style="display: flex; gap: 0.5rem;")
-            a(href=`/cuentas/vista/detalle/${cuenta.idCliente}`) Ver
-            a(href=`/cuentas/vista/editar/${cuenta.idCliente}`) Editar
+            a(href=`/cuentas/vista/detalle/${cuenta._id}`) Ver
+            a(href=`/cuentas/vista/editar/${cuenta._id}`) Editar
             if cuenta.saldo <= 0
-              a(href=`/cuentas/vista/eliminar/${cuenta.idCliente}`, style="color: red;") Eliminar
+              a(href=`/cuentas/vista/eliminar/${cuenta._id}`, style="color: red;") Eliminar
