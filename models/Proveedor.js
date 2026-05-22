@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const clienteSchema = new mongoose.Schema(
+const proveedorSchema = new mongoose.Schema(
     {
         nombre: {
             type: String,
@@ -8,13 +8,7 @@ const clienteSchema = new mongoose.Schema(
             trim: true,
         },
 
-        apellido: {
-            type: String,
-            required: true,
-            trim: true,
-        },
-
-        email: {
+        cuit: {
             type: String,
             required: true,
             unique: true,
@@ -26,10 +20,10 @@ const clienteSchema = new mongoose.Schema(
             required: true,
         },
 
-        cuit: {
+        email: {
             type: String,
             required: true,
-            unique: true,
+            trim: true,
         },
 
         domicilio: {
@@ -52,14 +46,19 @@ const clienteSchema = new mongoose.Schema(
             required: true,
         },
 
-        codigoPostal: {
+        rubro: {
             type: String,
             required: true,
         },
 
-        fechaNacimiento: {
-            type: Date,
+        condicionDePago: {
+            type: String,
             required: true,
+        },
+
+        activo: {
+            type: Boolean,
+            default: true,
         },
     },
     {
@@ -67,4 +66,4 @@ const clienteSchema = new mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model("Cliente", clienteSchema);
+module.exports = mongoose.model("Proveedor", proveedorSchema);

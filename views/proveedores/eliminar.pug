@@ -1,0 +1,37 @@
+extends ../layout
+
+block content
+  h2 Eliminar Proveedor
+
+  .card
+    p
+      strong ID:
+      | #{proveedor._id}
+
+    p
+      strong Nombre:
+      | #{proveedor.nombre}
+
+    p
+      strong CUIT:
+      | #{proveedor.cuit}
+
+    p
+      strong Teléfono:
+      | #{proveedor.telefono}
+
+    p
+      strong Email:
+      | #{proveedor.email}
+
+    p
+      strong Rubro:
+      | #{proveedor.rubro}
+
+    p(style="color: red; margin-top: 1rem;")
+      strong ¿Está seguro que desea eliminar este proveedor?
+
+  form(method="POST", action=`/proveedores/eliminar/${proveedor._id}`)
+    button(type="submit", style="background-color: red; color: white;") Eliminar
+
+  a.btn(href="/proveedores/vista") Volver

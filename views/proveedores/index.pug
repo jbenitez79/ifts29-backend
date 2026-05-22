@@ -1,0 +1,42 @@
+extends ../layout
+
+block content
+  div(style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;")
+    h2 Lista de Proveedores
+    a.btn(href="/proveedores/vista/nuevo") + Agregar Proveedor
+
+  .table-wrapper
+    table
+      tr
+        th ID
+        th Nombre
+        th CUIT
+        th Teléfono
+        th Email
+        th Domicilio
+        th Localidad
+        th Provincia
+        th País
+        th Rubro
+        th Cond. Pago
+        th Activo
+        th Acciones
+
+      each proveedor in proveedores
+        tr
+          td= proveedor._id
+          td= proveedor.nombre
+          td= proveedor.cuit
+          td= proveedor.telefono
+          td= proveedor.email
+          td= proveedor.domicilio
+          td= proveedor.localidad
+          td= proveedor.provincia
+          td= proveedor.pais
+          td= proveedor.rubro
+          td= proveedor.condicionDePago
+          td= proveedor.activo ? 'Sí' : 'No'
+          td(style="display: flex; gap: 0.5rem;")
+            a(href=`/proveedores/detalle/${proveedor._id}`) Ver
+            a(href=`/proveedores/vista/editar/${proveedor._id}`) Editar
+            a(href=`/proveedores/vista/eliminar/${proveedor._id}`) Eliminar

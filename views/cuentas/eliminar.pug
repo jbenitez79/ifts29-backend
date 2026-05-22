@@ -1,0 +1,34 @@
+extends ../layout
+
+block content
+  h2 Eliminar Cuenta Corriente
+
+  .card
+    p
+      strong ID:
+      | #{cuenta._id}
+
+    if cuenta.cliente
+      p
+        strong Cliente:
+        | #{cuenta.cliente.nombre} #{cuenta.cliente.apellido} (CUIT: #{cuenta.cliente.cuit})
+
+    p
+      strong Saldo:
+      | $#{cuenta.saldo.toFixed(2)}
+
+    p
+      strong Límite Crédito:
+      | $#{cuenta.limiteCredito}
+
+    p
+      strong Estado:
+      | #{cuenta.estado}
+
+    p(style="color: red; margin-top: 1rem;")
+      strong ¿Está seguro que desea eliminar esta cuenta corriente?
+
+  form(method="POST", action=`/cuentas/vista/eliminar/${cuenta._id}`)
+    button(type="submit", style="background-color: red; color: white;") Eliminar
+
+  a.btn(href="/cuentas/vista") Volver
