@@ -7,6 +7,7 @@ const connectDB = require("./config/db");
 
 const PORT = process.env.PORT || 3000;
 
+const authRoutes = require("./routes/authRoutes");
 const clienteRoutes = require("./routes/clienteRoutes");
 const proveedorRoutes = require("./routes/proveedorRoutes");
 const pedidoRoutes = require("./routes/pedidoRoutes");
@@ -28,8 +29,13 @@ app.use(express.static("public"));
 
 // rutas
 app.get("/", (req, res) => {
+    res.redirect("/login");
+});
+app.get("/index", (req, res) => {
     res.render("index");
 });
+
+app.use("/", authRoutes);
 app.use("/clientes", clienteRoutes);
 app.use("/proveedores", proveedorRoutes);
 app.use("/pedidos", pedidoRoutes);
