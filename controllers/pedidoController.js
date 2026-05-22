@@ -1,5 +1,5 @@
 const Pedido = require("../models/Pedido");
-const Producto = require("../models/Productos");
+const Producto = require("../models/Producto");
 const Cliente = require("../models/Cliente");
 
 const validarStock = async (productos) => {
@@ -34,6 +34,7 @@ const obtenerPedidos = async (req, res) => {
             .populate("productos.producto");
         res.json(pedidos);
     } catch (error) {
+        console.error("Error al obtener los pedidos:", error);
         res.status(500).json({ message: "Error al obtener los pedidos" });
     }
 };
@@ -48,6 +49,7 @@ const obtenerPedidoPorId = async (req, res) => {
         }
         res.json(pedido);
     } catch (error) {
+        console.error("Error al obtener el pedido:", error);
         res.status(500).json({ message: "Error al obtener el pedido" });
     }
 };
@@ -82,6 +84,7 @@ const crearPedido = async (req, res) => {
 
         res.status(201).json(nuevoPedido);
     } catch (error) {
+        console.error("Error al crear el pedido:", error);
         res.status(500).json({ message: "Error al crear el pedido" });
     }
 };
@@ -127,6 +130,7 @@ const actualizarPedido = async (req, res) => {
 
         res.json(pedido);
     } catch (error) {
+        console.error("Error al actualizar el pedido:", error);
         res.status(500).json({ message: "Error al actualizar el pedido" });
     }
 };
@@ -146,6 +150,7 @@ const eliminarPedido = async (req, res) => {
 
         res.json({ message: "Pedido eliminado correctamente" });
     } catch (error) {
+        console.error("Error al eliminar el pedido:", error);
         res.status(500).json({ message: "Error al eliminar el pedido" });
     }
 };
@@ -164,6 +169,7 @@ const obtenerPedidosVista = async (req, res) => {
         pedidos = pedidos.map(normalizeFecha);
         res.render("pedidos/index", { pedidos });
     } catch (error) {
+        console.error("Error al obtener los pedidos:", error);
         res.status(500).send("Error al obtener los pedidos");
     }
 };
@@ -180,6 +186,7 @@ const obtenerPedidoPorIdVista = async (req, res) => {
         pedido = normalizeFecha(pedido);
         res.render("pedidos/detalle", { pedido });
     } catch (error) {
+        console.error("Error al obtener el pedido:", error);
         res.status(500).send("Error al obtener el pedido");
     }
 };
@@ -190,6 +197,7 @@ const crearPedidoVista = async (req, res) => {
         const productos = await Producto.find().lean();
         res.render("pedidos/nuevo", { clientes, productos });
     } catch (error) {
+        console.error("Error al cargar el formulario:", error);
         res.status(500).send("Error al cargar el formulario");
     }
 };
@@ -237,6 +245,7 @@ const crearPedidoVistaPost = async (req, res) => {
 
         res.redirect("/pedidos/vista");
     } catch (error) {
+        console.error("Error al crear el pedido:", error);
         res.status(500).send("Error al crear el pedido");
     }
 };
@@ -253,6 +262,7 @@ const actualizarPedidoVista = async (req, res) => {
         pedido = normalizeFecha(pedido);
         res.render("pedidos/editar", { pedido });
     } catch (error) {
+        console.error("Error al obtener el pedido:", error);
         res.status(500).send("Error al obtener el pedido");
     }
 };
@@ -303,6 +313,7 @@ const actualizarPedidoVistaPost = async (req, res) => {
 
         res.redirect("/pedidos/vista");
     } catch (error) {
+        console.error("Error al actualizar el pedido:", error);
         res.status(500).send("Error al actualizar el pedido");
     }
 };
@@ -319,6 +330,7 @@ const eliminarPedidoVista = async (req, res) => {
         pedido = normalizeFecha(pedido);
         res.render("pedidos/eliminar", { pedido });
     } catch (error) {
+        console.error("Error al obtener el pedido:", error);
         res.status(500).send("Error al obtener el pedido");
     }
 };
@@ -338,6 +350,7 @@ const eliminarPedidoVistaPost = async (req, res) => {
 
         res.redirect("/pedidos/vista");
     } catch (error) {
+        console.error("Error al eliminar el pedido:", error);
         res.status(500).send("Error al eliminar el pedido");
     }
 };

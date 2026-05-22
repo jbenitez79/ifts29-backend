@@ -5,6 +5,7 @@ const obtenerProveedores = async (req, res) => {
         const proveedores = await Proveedor.find();
         res.json(proveedores);
     } catch (error) {
+        console.error("Error al obtener los proveedores:", error);
         res.status(500).json({ message: "Error al obtener los proveedores" });
     }
 };
@@ -17,6 +18,7 @@ const obtenerProveedorPorId = async (req, res) => {
         }
         res.json(proveedor);
     } catch (error) {
+        console.error("Error al obtener el proveedor:", error);
         res.status(500).json({ message: "Error al obtener el proveedor" });
     }
 };
@@ -26,6 +28,7 @@ const crearProveedor = async (req, res) => {
         const nuevoProveedor = await Proveedor.create(req.body);
         res.status(201).json(nuevoProveedor);
     } catch (error) {
+        console.error("Error al crear el proveedor:", error);
         res.status(500).json({ message: "Error al crear el proveedor" });
     }
 };
@@ -47,6 +50,7 @@ const actualizarProveedor = async (req, res) => {
 
         res.json(proveedorActualizado);
     } catch (error) {
+        console.error("Error al actualizar el proveedor:", error);
         res.status(500).json({ message: "Error al actualizar el proveedor" });
     }
 };
@@ -61,6 +65,7 @@ const eliminarProveedor = async (req, res) => {
 
         res.json({ message: "Proveedor eliminado correctamente" });
     } catch (error) {
+        console.error("Error al eliminar el proveedor:", error);
         res.status(500).json({ message: "Error al eliminar el proveedor" });
     }
 };
@@ -70,6 +75,7 @@ const obtenerProveedorVista = async (req, res) => {
         const proveedores = await Proveedor.find().lean();
         res.render("proveedores/index", { proveedores });
     } catch (error) {
+        console.error("Error al obtener los proveedores:", error);
         res.status(500).send("Error al obtener los proveedores");
     }
 };
@@ -82,6 +88,7 @@ const obtenerProveedorDetalle = async (req, res) => {
         }
         res.render("proveedores/detalle", { proveedor });
     } catch (error) {
+        console.error("Error al obtener el proveedor:", error);
         res.status(500).send("Error al obtener el proveedor");
     }
 };
@@ -95,6 +102,7 @@ const crearProveedorVistaPost = async (req, res) => {
         await Proveedor.create(req.body);
         res.redirect("/proveedores/vista");
     } catch (error) {
+        console.error("Error al crear el proveedor:", error);
         res.status(500).send("Error al crear el proveedor");
     }
 };
@@ -107,6 +115,7 @@ const actualizarProveedorVista = async (req, res) => {
         }
         res.render("proveedores/editar", { proveedor });
     } catch (error) {
+        console.error("Error al obtener el proveedor:", error);
         res.status(500).send("Error al obtener el proveedor");
     }
 };
@@ -128,6 +137,7 @@ const actualizarProveedorVistaPost = async (req, res) => {
 
         res.redirect("/proveedores/vista");
     } catch (error) {
+        console.error("Error al actualizar el proveedor:", error);
         res.status(500).send("Error al actualizar el proveedor");
     }
 };
@@ -140,6 +150,7 @@ const eliminarProveedorVista = async (req, res) => {
         }
         res.render("proveedores/eliminar", { proveedor });
     } catch (error) {
+        console.error("Error al obtener el proveedor:", error);
         res.status(500).send("Error al obtener el proveedor");
     }
 };
@@ -154,6 +165,7 @@ const eliminarProveedorVistaPost = async (req, res) => {
 
         res.redirect("/proveedores/vista");
     } catch (error) {
+        console.error("Error al eliminar el proveedor:", error);
         res.status(500).send("Error al eliminar el proveedor");
     }
 };

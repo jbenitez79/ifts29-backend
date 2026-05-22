@@ -6,6 +6,7 @@ const obtenerCuentas = async (req, res) => {
         const cuentas = await CuentaCorriente.find().populate("cliente");
         res.json(cuentas);
     } catch (error) {
+        console.error("Error al obtener las cuentas:", error);
         res.status(500).json({ message: "Error al obtener las cuentas" });
     }
 };
@@ -20,6 +21,7 @@ const obtenerCuentaPorClienteId = async (req, res) => {
         }
         res.json(cuenta);
     } catch (error) {
+        console.error("Error al obtener la cuenta:", error);
         res.status(500).json({ message: "Error al obtener la cuenta" });
     }
 };
@@ -46,6 +48,7 @@ const crearCuenta = async (req, res) => {
 
         res.status(201).json(nuevaCuenta);
     } catch (error) {
+        console.error("Error al crear la cuenta:", error);
         res.status(500).json({ message: "Error al crear la cuenta" });
     }
 };
@@ -86,6 +89,7 @@ const registrarPago = async (req, res) => {
             cuenta,
         });
     } catch (error) {
+        console.error("Error al registrar el pago:", error);
         res.status(500).json({ message: "Error al registrar el pago" });
     }
 };
@@ -127,6 +131,7 @@ const registrarCarga = async (req, res) => {
             cuenta,
         });
     } catch (error) {
+        console.error("Error al registrar la carga:", error);
         res.status(500).json({ message: "Error al registrar la carga" });
     }
 };
@@ -151,6 +156,7 @@ const eliminarCuenta = async (req, res) => {
 
         res.json({ message: "Cuenta eliminada exitosamente" });
     } catch (error) {
+        console.error("Error al eliminar la cuenta:", error);
         res.status(500).json({ message: "Error al eliminar la cuenta" });
     }
 };
@@ -178,6 +184,7 @@ const obtenerCuentasVista = async (req, res) => {
         cuentas = cuentas.map(normalizeFechaCuenta);
         res.render("cuentas/index", { cuentas });
     } catch (error) {
+        console.error("Error al obtener las cuentas:", error);
         res.status(500).send("Error al obtener las cuentas");
     }
 };
@@ -193,6 +200,7 @@ const obtenerDetalleCuentaVista = async (req, res) => {
         cuenta = normalizeFechaCuenta(cuenta);
         res.render("cuentas/detalle", { cuenta });
     } catch (error) {
+        console.error("Error al obtener la cuenta:", error);
         res.status(500).send("Error al obtener la cuenta");
     }
 };
@@ -202,6 +210,7 @@ const crearCuentaVista = async (req, res) => {
         const clientes = await Cliente.find().lean();
         res.render("cuentas/nuevo", { clientes });
     } catch (error) {
+        console.error("Error al cargar el formulario:", error);
         res.status(500).send("Error al cargar el formulario");
     }
 };
@@ -228,6 +237,7 @@ const crearCuentaVistaPost = async (req, res) => {
 
         res.redirect("/cuentas/vista");
     } catch (error) {
+        console.error("Error al crear la cuenta:", error);
         res.status(500).send("Error al crear la cuenta");
     }
 };
@@ -243,6 +253,7 @@ const editarCuentaVista = async (req, res) => {
         cuenta = normalizeFechaCuenta(cuenta);
         res.render("cuentas/editar", { cuenta });
     } catch (error) {
+        console.error("Error al obtener la cuenta:", error);
         res.status(500).send("Error al obtener la cuenta");
     }
 };
@@ -279,6 +290,7 @@ const registrarCargaVistaPost = async (req, res) => {
 
         res.redirect("/cuentas/vista");
     } catch (error) {
+        console.error("Error al registrar la carga:", error);
         res.status(500).send("Error al registrar la carga");
     }
 };
@@ -314,6 +326,7 @@ const registrarPagoVistaPost = async (req, res) => {
 
         res.redirect("/cuentas/vista");
     } catch (error) {
+        console.error("Error al registrar el pago:", error);
         res.status(500).send("Error al registrar el pago");
     }
 };
@@ -329,6 +342,7 @@ const eliminarCuentaVista = async (req, res) => {
         cuenta = normalizeFechaCuenta(cuenta);
         res.render("cuentas/eliminar", { cuenta });
     } catch (error) {
+        console.error("Error al obtener la cuenta:", error);
         res.status(500).send("Error al obtener la cuenta");
     }
 };
@@ -350,6 +364,7 @@ const eliminarCuentaVistaPost = async (req, res) => {
 
         res.redirect("/cuentas/vista");
     } catch (error) {
+        console.error("Error al eliminar la cuenta:", error);
         res.status(500).send("Error al eliminar la cuenta");
     }
 };

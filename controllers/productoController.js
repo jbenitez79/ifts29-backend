@@ -1,4 +1,4 @@
-const Producto = require("../models/Productos");
+const Producto = require("../models/Producto");
 
 const obtenerProductos = async (req, res) => {
     try {
@@ -17,7 +17,8 @@ const obtenerProductoPorId = async (req, res) => {
         }
         res.json(producto);
     } catch (error) {
-        res.status(500).json({ message: "Error al obtener el producto" });
+        console.error("Error al obtener el producto:", error);
+        res.status(500).send("Error al obtener el producto");
     }
 };
 
@@ -32,7 +33,8 @@ const buscarProductoPorNombre = async (req, res) => {
         }
         res.json(producto);
     } catch (error) {
-        res.status(500).json({ message: "Error al buscar producto" });
+        console.error("Error al buscar el producto:", error);
+        res.status(500).send("Error al buscar el producto");
     }
 };
 
@@ -41,7 +43,8 @@ const crearProducto = async (req, res) => {
         const nuevoProducto = await Producto.create(req.body);
         res.status(201).json(nuevoProducto);
     } catch (error) {
-        res.status(500).json({ message: "Error al crear el producto" });
+        console.error("Error al crear el producto:", error);
+        res.status(500).send("Error al crear el producto");
     }
 };
 
@@ -62,7 +65,8 @@ const actualizarProducto = async (req, res) => {
 
         res.json(productoActualizado);
     } catch (error) {
-        res.status(500).json({ message: "Error al actualizar el producto" });
+        console.error("Error al actualizar el producto:", error);
+        res.status(500).send("Error al actualizar el producto");
     }
 };
 
@@ -76,7 +80,8 @@ const eliminarProducto = async (req, res) => {
 
         res.json({ message: "Producto eliminado correctamente" });
     } catch (error) {
-        res.status(500).json({ message: "Error al eliminar el producto" });
+        console.error("Error al eliminar el producto:", error);
+        res.status(500).send("Error al eliminar el producto");
     }
 };
 
@@ -85,6 +90,7 @@ const obtenerProductosVista = async (req, res) => {
         const productos = await Producto.find().lean();
         res.render("productos/index", { productos });
     } catch (error) {
+        console.error("Error al obtener los productos:", error);
         res.status(500).send("Error al obtener los productos");
     }
 };
@@ -97,6 +103,7 @@ const obtenerProductoPorIdVista = async (req, res) => {
         }
         res.render("productos/detalle", { producto });
     } catch (error) {
+        console.error("Error al obtener el producto:", error);
         res.status(500).send("Error al obtener el producto");
     }
 };
@@ -110,6 +117,7 @@ const crearProductoVistaPost = async (req, res) => {
         await Producto.create(req.body);
         res.redirect("/productos/vista");
     } catch (error) {
+        console.error("Error al crear el producto:", error);
         res.status(500).send("Error al crear el producto");
     }
 };
@@ -122,6 +130,7 @@ const editarProductoVista = async (req, res) => {
         }
         res.render("productos/editar", { producto });
     } catch (error) {
+        console.error("Error al obtener el producto:", error);
         res.status(500).send("Error al obtener el producto");
     }
 };
@@ -143,6 +152,7 @@ const actualizarProductoVistaPost = async (req, res) => {
 
         res.redirect("/productos/vista");
     } catch (error) {
+        console.error("Error al actualizar el producto:", error);
         res.status(500).send("Error al actualizar el producto");
     }
 };
@@ -155,6 +165,7 @@ const eliminarProductoVista = async (req, res) => {
         }
         res.render("productos/eliminar", { producto });
     } catch (error) {
+        console.error("Error al obtener el producto:", error);
         res.status(500).send("Error al obtener el producto");
     }
 };
@@ -169,6 +180,7 @@ const eliminarProductoVistaPost = async (req, res) => {
 
         res.redirect("/productos/vista");
     } catch (error) {
+        console.error("Error al eliminar el producto:", error);
         res.status(500).send("Error al eliminar el producto");
     }
 };
