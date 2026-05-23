@@ -49,6 +49,6 @@ block content
 
   p
     strong Fecha de Nacimiento:
-    | #{cliente.fechaNacimiento.toLocaleDateString('es-AR')}
+    | #{cliente.fechaNacimiento ? cliente.fechaNacimiento.toLocaleDateString('es-AR') : ''}
 
   a.btn(href="/clientes/vista") Volver

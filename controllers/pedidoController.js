@@ -191,15 +191,8 @@ const obtenerPedidoPorIdVista = async (req, res) => {
     }
 };
 
-const crearPedidoVista = async (req, res) => {
-    try {
-        const clientes = await Cliente.find().lean();
-        const productos = await Producto.find().lean();
-        res.render("pedidos/nuevo", { clientes, productos });
-    } catch (error) {
-        console.error("Error al cargar el formulario:", error);
-        res.status(500).send("Error al cargar el formulario");
-    }
+const crearPedidoVista = (req, res) => {
+    res.render("pedidos/nuevo");
 };
 
 const crearPedidoVistaPost = async (req, res) => {

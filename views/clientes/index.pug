@@ -35,7 +35,7 @@ block content
           td= cliente.provincia
           td= cliente.pais
           td= cliente.codigoPostal
-          td= cliente.fechaNacimiento.toLocaleDateString('es-AR')
+          td= cliente.fechaNacimiento ? cliente.fechaNacimiento.toLocaleDateString('es-AR') : ''
           td(style="display:flex; gap:0.5rem;")
             a(href=`/clientes/vista/detalle/${cliente._id}`) Ver
             a(href=`/clientes/vista/editar/${cliente._id}`) Editar

@@ -28,23 +28,24 @@ block content
     br
 
     h3 Productos
-    each prod, index in pedido.productos
-      div.producto-item
-        input(type="hidden", name=`productos[${index}][idProducto]`, value=prod.producto ? prod.producto._id : '')
+    if pedido.productos
+      each prod, index in pedido.productos
+        div.producto-item
+          input(type="hidden", name=`productos[${index}][idProducto]`, value=prod.producto ? prod.producto._id : '')
 
-        label Producto:
-        p(style="margin: 0.25rem 0;") #{prod.producto ? prod.producto.nombre : 'Producto desconocido'}
-        br
+          label Producto:
+          p(style="margin: 0.25rem 0;") #{prod.producto ? prod.producto.nombre : 'Producto desconocido'}
+          br
 
-        label Cantidad:
-        input(type="number", name=`productos[${index}][cantidad]`, value=prod.cantidad)
-        br
-        br
+          label Cantidad:
+          input(type="number", name=`productos[${index}][cantidad]`, value=prod.cantidad)
+          br
+          br
 
-        label Precio:
-        input(type="number", name=`productos[${index}][precio]`, value=prod.precio, step="0.01")
-        br
-        br
+          label Precio:
+          input(type="number", name=`productos[${index}][precio]`, value=prod.precio, step="0.01")
+          br
+          br
 
     button(type="submit") Guardar
 

@@ -35,12 +35,13 @@ block content
           th Precio Unitario
           th Subtotal
       tbody
-        each prod in pedido.productos
-          tr
-            td= prod.cantidad
-            td= prod.producto ? (prod.producto.descripcion || prod.producto.nombre) : 'Producto desconocido'
-            td= "$" + prod.precio
-            td= "$" + (prod.cantidad * prod.precio)
+        if pedido.productos
+          each prod in pedido.productos
+            tr
+              td= prod.cantidad
+              td= prod.producto ? (prod.producto.descripcion || prod.producto.nombre) : 'Producto desconocido'
+              td= "$" + prod.precio
+              td= "$" + (prod.cantidad * prod.precio)
 
     .total-pedido
       strong Total: $#{pedido.total}

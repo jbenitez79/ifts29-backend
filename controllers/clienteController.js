@@ -54,7 +54,7 @@ const actualizarCliente = async (req, res) => {
     try {
         const clienteActualizado = await Cliente.findByIdAndUpdate(req.params.id, req.body,
             {
-                returnDocument: "after",
+                new: true,
                 runValidators: true,
             }
         );
@@ -142,7 +142,7 @@ const actualizarClienteVistaPost = async (req, res) => {
     try {
         const clienteActualizado = await Cliente.findByIdAndUpdate(req.params.id, req.body,
             {
-                returnDocument: "after",
+                new: true,
                 runValidators: true,
             }
         );

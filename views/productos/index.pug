@@ -20,7 +20,7 @@ block content
         tr
           td= producto._id
           td= producto.nombre
-          td= producto.descripcion
+          td= producto.descripcion || ''
           td= "$" + producto.precio
           td
             span(style=`color: ${parseInt(producto.stock) <= parseInt(producto.stock_minimo) ? 'red' : 'green'}`)
