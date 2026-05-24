@@ -1,3 +1,4 @@
+// Cargar variables de entorno
 require("dotenv").config();
 const express = require("express");
 const methodOverride = require("method-override");
@@ -14,6 +15,7 @@ const pedidoRoutes = require("./routes/pedidoRoutes");
 const productoRoutes = require("./routes/productoRoutes");
 const cuentaCorrienteRoutes = require("./routes/cuentaCorrienteRoutes");
 
+// Iniciar la conexión a la base de datos
 connectDB();
 
 app.use(express.json());
@@ -42,6 +44,10 @@ app.use("/pedidos", pedidoRoutes);
 app.use("/productos", productoRoutes);
 app.use("/cuentas", cuentaCorrienteRoutes);
 
-app.listen(PORT, () => {
-    console.log("Servidor corriendo en puerto " + PORT);
-});
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log("Servidor corriendo en puerto " + PORT);
+    });
+}
+
+module.exports = app;
