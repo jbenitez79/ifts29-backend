@@ -1,335 +1,351 @@
-const fs = require("fs");
-const path = require("path");
 const Pedido = require("../models/Pedido");
-const rutaArchivo = path.join(__dirname, "../data/pedido.json");
-const rutaProductos = path.join(__dirname, "../data/producto.json");
-const rutaClientes = path.join(__dirname, "../data/cliente.json");
+const Producto = require("../models/Producto");
+const Cliente = require("../models/Cliente");
 
-const leerArchivo = (ruta) => {
-    try {
-        const data = fs.readFileSync(ruta, "utf8");
-        return JSON.parse(data);
-    } catch (error) {
-        return [];
-    }
-};
-
-const guardarPedidos = (ruta, datos) => {
-    fs.writeFileSync(ruta, JSON.stringify(datos, null, 2));
-};
-
-const buscarClientePorCuit = (cuit) => {
-    const clientes = leerClientes();
-    return clientes.find(c => c.cuit === String(cuit));
-};
-
-const buscarProductoPorNombre = (nombre) => {
-    const productos = leerProductos();
-    const nombreLower = nombre.toLowerCase();
-    return productos.find(p => p.nombre.toLowerCase().includes(nombreLower));
-};
-
-const obtenerClientePorId = (id) => {
-    const clientes = leerClientes();
-    return clientes.find(c => c.id === parseInt(id));
-};
-
-const obtenerProductoPorId = (id) => {
-    const productos = leerProductos();
-    return productos.find(p => p.id === parseInt(id));
-};
-
-const buscarPedidoPorIdInterno = (id) => {
-    const pedidos = leerPedidos();
-    return pedidos.find((p) => p.id === parseInt(id));
-};
-
-const enrichPedidoConDatosClienteYProducto = (pedido) => {
-    if (!pedido) return null;
-    const cliente = obtenerClientePorId(pedido.idCliente);
-    const productosEnriquecidos = pedido.productos.map(p => {
-        const producto = obtenerProductoPorId(p.idProducto);
-        return {
-            ...p,
-            descripcion: producto ? producto.descripcion : 'Sin descripción',
-            nombreProducto: producto ? producto.nombre : 'Producto desconocido',
-            subtotal: parseInt(p.cantidad) * parseFloat(p.precio)
-        };
-    });
-    return {
-        ...pedido,
-        cliente,
-        productos: productosEnriquecidos
-    };
-};
-
-const enrichListaPedidos = (pedidos) => {
-    return pedidos.map(pedido => {
-        const cliente = obtenerClientePorId(pedido.idCliente);
-        return {
-            ...pedido,
-            nombreCliente: cliente ? `${cliente.nombre} ${cliente.apellido}` : 'Cliente desconocido',
-            cuitCliente: cliente ? cliente.cuit : '',
-            cantidadProductos: pedido.productos.length
-        };
-    });
-};
-
-const leerPedidos = () => leerArchivo(rutaArchivo);
-const leerProductos = () => leerArchivo(rutaProductos);
-const leerClientes = () => leerArchivo(rutaClientes);
-
-const obtenerNuevoId = (pedidos) => {
-    if (pedidos.length === 0) return 1;
-    const maxId = Math.max(...pedidos.map(p => p.id));
-    return maxId + 1;
-};
-
-const validarStock = (productosPedido) => {
-    const productos = leerProductos();
+const validarStock = async (productos) => {
     const errores = [];
-
-    for (const item of productosPedido) {
-        const idProducto = parseInt(item.idProducto);
-        const cantidad = parseInt(item.cantidad);
-        const producto = productos.find(p => p.id == idProducto);
+    for (const item of productos) {
+        const producto = await Producto.findById(item.producto);
         if (!producto) {
-            errores.push(`Producto ID ${item.idProducto} no existe`);
-        } else if (parseInt(producto.stock) < cantidad) {
+            errores.push(`Producto ${item.producto} no existe`);
+        } else if (producto.stock < item.cantidad) {
             errores.push(`Stock insuficiente para "${producto.nombre}" (disponible: ${producto.stock}, solicitado: ${item.cantidad})`);
         }
     }
     return errores;
 };
 
-const descontarStock = (productosPedido) => {
-    const productos = leerProductos();
-
-    for (const item of productosPedido) {
-        const idProducto = parseInt(item.idProducto);
-        const cantidad = parseInt(item.cantidad);
-        const producto = productos.find(p => p.id == idProducto);
-        if (producto) {
-            producto.stock = parseInt(producto.stock) - cantidad;
-        }
+const descontarStock = async (productos) => {
+    for (const item of productos) {
+        await Producto.findByIdAndUpdate(item.producto, { $inc: { stock: -item.cantidad } });
     }
-    guardarPedidos(rutaProductos, productos);
 };
 
-const restituirStock = (productosPedido) => {
-    const productos = leerProductos();
-
-    for (const item of productosPedido) {
-        const idProducto = parseInt(item.idProducto);
-        const cantidad = parseInt(item.cantidad);
-        const producto = productos.find(p => p.id == idProducto);
-        if (producto) {
-            producto.stock = parseInt(producto.stock) + cantidad;
-        }
+const restituirStock = async (productos) => {
+    for (const item of productos) {
+        await Producto.findByIdAndUpdate(item.producto, { $inc: { stock: item.cantidad } });
     }
-    guardarPedidos(rutaProductos, productos);
 };
 
-const obtenerPedidos = (req, res) => {
+const obtenerPedidos = async (req, res) => {
     try {
-        const pedidos = leerPedidos();
-        const pedidosEnriquecidos = enrichListaPedidos(pedidos);
-        res.json(pedidosEnriquecidos);
+        const pedidos = await Pedido.find()
+            .populate("cliente")
+            .populate("productos.producto");
+        res.json(pedidos);
     } catch (error) {
+        console.error("Error al obtener los pedidos:", error);
         res.status(500).json({ message: "Error al obtener los pedidos" });
     }
 };
 
-const obtenerPedidoPorId = (req, res) => {
+const obtenerPedidoPorId = async (req, res) => {
     try {
-        const pedidos = leerPedidos();
-        const id = parseInt(req.params.id);
-        const pedido = pedidos.find((p) => p.id === id);
+        const pedido = await Pedido.findById(req.params.id)
+            .populate("cliente")
+            .populate("productos.producto");
         if (!pedido) {
             return res.status(404).json({ message: "Pedido no encontrado" });
         }
-        const pedidoEnriquecido = enrichPedidoConDatosClienteYProducto(pedido);
-        res.json(pedidoEnriquecido);
+        res.json(pedido);
     } catch (error) {
+        console.error("Error al obtener el pedido:", error);
         res.status(500).json({ message: "Error al obtener el pedido" });
     }
 };
 
-const crearPedido = (req, res) => {
+const crearPedido = async (req, res) => {
     try {
-        const pedidos = leerPedidos();
-        const { idCliente, productos, fecha } = req.body;
+        const { cliente, productos, fecha } = req.body;
 
-        if (!productos || !Array.isArray(productos) || productos.length === 0) {
-            return res.status(400).json({ message: "Datos incompletos: se requiere idCliente y productos" });
+        if (!cliente || !productos || !Array.isArray(productos) || productos.length === 0) {
+            return res.status(400).json({ message: "Datos incompletos: se requiere cliente y productos" });
         }
 
-        let cliente;
-        if (req.body.cuit) {
-            cliente = buscarClientePorCuit(req.body.cuit);
-            if (!cliente) {
-                return res.status(400).json({ message: `Cliente con CUIT ${req.body.cuit} no encontrado` });
-            }
-        } else if (idCliente) {
-            cliente = obtenerClientePorId(idCliente);
-            if (!cliente) {
-                return res.status(400).json({ message: `Cliente con ID ${idCliente} no existe` });
-            }
-        } else {
-            return res.status(400).json({ message: "Se requiere CUIT o ID del cliente" });
-        }
-
-        const erroresStock = validarStock(productos);
+        const erroresStock = await validarStock(productos);
         if (erroresStock.length > 0) {
             return res.status(400).json({ message: erroresStock.join(", ") });
         }
 
-        descontarStock(productos);
+        const total = productos.reduce((sum, p) => sum + (parseInt(p.cantidad) * parseFloat(p.precio)), 0);
 
-        const nuevoPedido = {
-            id: obtenerNuevoId(pedidos),
-            idCliente: cliente.id,
-            productos: productos,
-            fecha: fecha || new Date().toISOString().split("T")[0],
-            estado: "pendiente",
-            total: productos.reduce((sum, prod) => {
-                return sum + (parseInt(prod.cantidad) * parseFloat(prod.precio));
-            }, 0)
-        };
+        const nuevoPedido = await Pedido.create({
+            cliente,
+            productos: productos.map(p => ({
+                producto: p.producto,
+                cantidad: parseInt(p.cantidad),
+                precio: parseFloat(p.precio),
+            })),
+            fecha: fecha || new Date(),
+            total,
+        });
 
-        pedidos.push(nuevoPedido);
-        guardarPedidos(rutaArchivo, pedidos);
-        if (req.xhr || req.headers.accept?.includes("json")) {
-            res.status(201).json(nuevoPedido);
-        } else {
-            res.redirect("/pedidos/vista");
-        }
+        await descontarStock(productos);
+
+        res.status(201).json(nuevoPedido);
     } catch (error) {
+        console.error("Error al crear el pedido:", error);
         res.status(500).json({ message: "Error al crear el pedido" });
     }
 };
 
-const actualizarPedido = (req, res) => {
+const actualizarPedido = async (req, res) => {
     try {
-        const pedidos = leerPedidos();
-        const id = parseInt(req.params.id);
-        const pedido = pedidos.find((p) => p.id === id);
-
+        const pedido = await Pedido.findById(req.params.id);
         if (!pedido) {
             return res.status(404).json({ message: "Pedido no encontrado" });
         }
 
         if (req.body.estado && req.body.estado !== pedido.estado) {
             if (req.body.estado === "cancelado" && pedido.estado !== "cancelado") {
-                restituirStock(pedido.productos);
+                await restituirStock(pedido.productos);
             }
             pedido.estado = req.body.estado;
         }
 
-        if (req.body.idCliente) pedido.idCliente = req.body.idCliente;
+        if (req.body.cliente) pedido.cliente = req.body.cliente;
         if (req.body.fecha) pedido.fecha = req.body.fecha;
 
         if (req.body.productos) {
-            const productosAnteriores = pedido.productos.map(p => ({ idProducto: parseInt(p.idProducto), cantidad: parseInt(p.cantidad), precio: parseFloat(p.precio) }));
-            const productosNuevos = req.body.productos.map(p => ({ idProducto: parseInt(p.idProducto), cantidad: parseInt(p.cantidad), precio: parseFloat(p.precio) }));
-            const productosCambiaron = JSON.stringify(productosAnteriores) !== JSON.stringify(productosNuevos);
+            await restituirStock(pedido.productos);
 
-            if (productosCambiaron) {
-                restituirStock(pedido.productos);
-
-                const erroresStock = validarStock(req.body.productos);
-                if (erroresStock.length > 0) {
-                    descontarStock(pedido.productos);
-                    return res.status(400).json({ message: erroresStock.join(", ") });
-                }
-
-                pedido.productos = req.body.productos;
-                descontarStock(req.body.productos);
-                const productosCalc = req.body.productos;
-                pedido.total = productosCalc.reduce((sum, prod) => {
-                    return sum + (parseInt(prod.cantidad) * parseFloat(prod.precio));
-                }, 0);
-            } else {
-                pedido.productos = req.body.productos;
+            const erroresStock = await validarStock(req.body.productos);
+            if (erroresStock.length > 0) {
+                await descontarStock(pedido.productos);
+                return res.status(400).json({ message: erroresStock.join(", ") });
             }
+
+            pedido.productos = req.body.productos.map(p => ({
+                producto: p.producto,
+                cantidad: parseInt(p.cantidad),
+                precio: parseFloat(p.precio),
+            }));
+
+            pedido.total = pedido.productos.reduce((sum, p) => sum + (p.cantidad * p.precio), 0);
+
+            await descontarStock(req.body.productos);
         }
 
-        guardarPedidos(rutaArchivo, pedidos);
-        if (req.xhr || req.headers.accept?.includes("json")) {
-            res.json(pedido);
-        } else {
-            res.redirect("/pedidos/vista");
-        }
+        await pedido.save();
+
+        res.json(pedido);
     } catch (error) {
+        console.error("Error al actualizar el pedido:", error);
         res.status(500).json({ message: "Error al actualizar el pedido" });
     }
 };
 
-const eliminarPedido = (req, res) => {
+const eliminarPedido = async (req, res) => {
     try {
-        const pedidos = leerPedidos();
-        const id = parseInt(req.params.id);
-        const pedido = pedidos.find((p) => p.id === id);
-
+        const pedido = await Pedido.findById(req.params.id);
         if (!pedido) {
             return res.status(404).json({ message: "Pedido no encontrado" });
         }
 
         if (pedido.estado !== "cancelado") {
-            restituirStock(pedido.productos);
+            await restituirStock(pedido.productos);
         }
 
-        const nuevosPedidos = pedidos.filter((p) => p.id !== id);
-        guardarPedidos(rutaArchivo, nuevosPedidos);
-        if (req.xhr || req.headers.accept?.includes("json")) {
-            res.json({ message: "Pedido eliminado correctamente" });
-        } else {
-            res.redirect("/pedidos/vista");
-        }
+        await Pedido.findByIdAndDelete(req.params.id);
+
+        res.json({ message: "Pedido eliminado correctamente" });
     } catch (error) {
+        console.error("Error al eliminar el pedido:", error);
         res.status(500).json({ message: "Error al eliminar el pedido" });
     }
 };
 
-const obtenerPedidosVista = (req, res) => {
-    const pedidos = leerPedidos();
-    const pedidosEnriquecidos = enrichListaPedidos(pedidos);
-    res.render("pedidos/index", { pedidos: pedidosEnriquecidos });
+const normalizeFecha = (p) => {
+    if (p.fecha && typeof p.fecha === "string") p.fecha = new Date(p.fecha);
+    return p;
 };
 
-const obtenerPedidoPorIdVista = (req, res) => {
-    const id = parseInt(req.params.id);
-    const pedidos = leerPedidos();
-    const pedido = pedidos.find(p => p.id === id);
-    if (!pedido) {
-        return res.status(404).json({ message: "Pedido no encontrado" });
+const obtenerPedidosVista = async (req, res) => {
+    try {
+        let pedidos = await Pedido.find()
+            .populate("cliente")
+            .populate("productos.producto")
+            .lean();
+        pedidos = pedidos.map(normalizeFecha);
+        res.render("pedidos/index", { pedidos });
+    } catch (error) {
+        console.error("Error al obtener los pedidos:", error);
+        res.status(500).send("Error al obtener los pedidos");
     }
-    const pedidoEnriquecido = enrichPedidoConDatosClienteYProducto(pedido);
-    res.render("pedidos/detalle", { pedido: pedidoEnriquecido });
+};
+
+const obtenerPedidoPorIdVista = async (req, res) => {
+    try {
+        let pedido = await Pedido.findById(req.params.id)
+            .populate("cliente")
+            .populate("productos.producto")
+            .lean();
+        if (!pedido) {
+            return res.status(404).send("Pedido no encontrado");
+        }
+        pedido = normalizeFecha(pedido);
+        res.render("pedidos/detalle", { pedido });
+    } catch (error) {
+        console.error("Error al obtener el pedido:", error);
+        res.status(500).send("Error al obtener el pedido");
+    }
 };
 
 const crearPedidoVista = (req, res) => {
-    const clientes = leerClientes();
-    const productos = leerProductos();
-    res.render("pedidos/nuevo", { clientes, productos });
+    res.render("pedidos/nuevo");
 };
 
-const actualizarPedidoVista = (req, res) => {
-    const id = parseInt(req.params.id);
-    const pedidos = leerPedidos();
-    const pedido = pedidos.find(p => p.id === id);
-    if (!pedido) {
-        return res.status(404).json({ message: "Pedido no encontrado" });
+const crearPedidoVistaPost = async (req, res) => {
+    try {
+        let clienteId = req.body.idCliente;
+        if (!clienteId && req.body.cuit) {
+            const cliente = await Cliente.findOne({ cuit: req.body.cuit });
+            if (!cliente) {
+                return res.status(400).send("Cliente no encontrado");
+            }
+            clienteId = cliente._id;
+        }
+
+        if (!clienteId) {
+            return res.status(400).send("Datos incompletos: se requiere cliente");
+        }
+
+        const productos = Array.isArray(req.body.productos)
+            ? req.body.productos
+            : [req.body.productos];
+
+        const pedidoProductos = productos.map(p => ({
+            producto: p.idProducto,
+            cantidad: parseInt(p.cantidad),
+            precio: parseFloat(p.precio),
+        }));
+
+        const erroresStock = await validarStock(pedidoProductos);
+        if (erroresStock.length > 0) {
+            return res.status(400).send(erroresStock.join(", "));
+        }
+
+        const total = pedidoProductos.reduce((sum, p) => sum + (p.cantidad * p.precio), 0);
+
+        await Pedido.create({
+            cliente: clienteId,
+            productos: pedidoProductos,
+            fecha: req.body.fecha || new Date(),
+            total,
+        });
+
+        await descontarStock(pedidoProductos);
+
+        res.redirect("/pedidos/vista");
+    } catch (error) {
+        console.error("Error al crear el pedido:", error);
+        res.status(500).send("Error al crear el pedido");
     }
-    res.render("pedidos/editar", { pedido });
 };
 
-const eliminarPedidoVista = (req, res) => {
-    const pedido = buscarPedidoPorIdInterno(req.params.id);
-    if (!pedido) {
-        return res.status(404).json({ message: "Pedido no encontrado" });
+const actualizarPedidoVista = async (req, res) => {
+    try {
+        let pedido = await Pedido.findById(req.params.id)
+            .populate("cliente")
+            .populate("productos.producto")
+            .lean();
+        if (!pedido) {
+            return res.status(404).send("Pedido no encontrado");
+        }
+        pedido = normalizeFecha(pedido);
+        res.render("pedidos/editar", { pedido });
+    } catch (error) {
+        console.error("Error al obtener el pedido:", error);
+        res.status(500).send("Error al obtener el pedido");
     }
-    res.render("pedidos/eliminar", { pedido });
+};
+
+const actualizarPedidoVistaPost = async (req, res) => {
+    try {
+        const pedido = await Pedido.findById(req.params.id);
+        if (!pedido) {
+            return res.status(404).send("Pedido no encontrado");
+        }
+
+        if (req.body.estado && req.body.estado !== pedido.estado) {
+            if (req.body.estado === "cancelado" && pedido.estado !== "cancelado") {
+                await restituirStock(pedido.productos);
+            }
+            pedido.estado = req.body.estado;
+        }
+
+        if (req.body.idCliente) pedido.cliente = req.body.idCliente;
+        if (req.body.fecha) pedido.fecha = req.body.fecha;
+
+        if (req.body.productos) {
+            await restituirStock(pedido.productos);
+
+            const productosArray = Array.isArray(req.body.productos)
+                ? req.body.productos
+                : [req.body.productos];
+
+            const nuevosProductos = productosArray.map(p => ({
+                producto: p.idProducto,
+                cantidad: parseInt(p.cantidad),
+                precio: parseFloat(p.precio),
+            }));
+
+            const erroresStock = await validarStock(nuevosProductos);
+            if (erroresStock.length > 0) {
+                await descontarStock(pedido.productos);
+                return res.status(400).send(erroresStock.join(", "));
+            }
+
+            pedido.productos = nuevosProductos;
+            pedido.total = nuevosProductos.reduce((sum, p) => sum + (p.cantidad * p.precio), 0);
+
+            await descontarStock(nuevosProductos);
+        }
+
+        await pedido.save();
+
+        res.redirect("/pedidos/vista");
+    } catch (error) {
+        console.error("Error al actualizar el pedido:", error);
+        res.status(500).send("Error al actualizar el pedido");
+    }
+};
+
+const eliminarPedidoVista = async (req, res) => {
+    try {
+        let pedido = await Pedido.findById(req.params.id)
+            .populate("cliente")
+            .populate("productos.producto")
+            .lean();
+        if (!pedido) {
+            return res.status(404).send("Pedido no encontrado");
+        }
+        pedido = normalizeFecha(pedido);
+        res.render("pedidos/eliminar", { pedido });
+    } catch (error) {
+        console.error("Error al obtener el pedido:", error);
+        res.status(500).send("Error al obtener el pedido");
+    }
+};
+
+const eliminarPedidoVistaPost = async (req, res) => {
+    try {
+        const pedido = await Pedido.findById(req.params.id);
+        if (!pedido) {
+            return res.status(404).send("Pedido no encontrado");
+        }
+
+        if (pedido.estado !== "cancelado") {
+            await restituirStock(pedido.productos);
+        }
+
+        await Pedido.findByIdAndDelete(req.params.id);
+
+        res.redirect("/pedidos/vista");
+    } catch (error) {
+        console.error("Error al eliminar el pedido:", error);
+        res.status(500).send("Error al eliminar el pedido");
+    }
 };
 
 module.exports = {
@@ -341,6 +357,9 @@ module.exports = {
     obtenerPedidosVista,
     obtenerPedidoPorIdVista,
     crearPedidoVista,
+    crearPedidoVistaPost,
     actualizarPedidoVista,
+    actualizarPedidoVistaPost,
     eliminarPedidoVista,
+    eliminarPedidoVistaPost,
 };

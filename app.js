@@ -1,17 +1,22 @@
+// Cargar variables de entorno
 require("dotenv").config();
 const express = require("express");
 const methodOverride = require("method-override");
 const app = express();
 
+const connectDB = require("./config/db");
+
 const PORT = process.env.PORT || 3000;
 
-
+const authRoutes = require("./routes/authRoutes");
 const clienteRoutes = require("./routes/clienteRoutes");
 const proveedorRoutes = require("./routes/proveedorRoutes");
 const pedidoRoutes = require("./routes/pedidoRoutes");
 const productoRoutes = require("./routes/productoRoutes");
-
 const cuentaCorrienteRoutes = require("./routes/cuentaCorrienteRoutes");
+
+// Iniciar la conexión a la base de datos
+connectDB();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -26,14 +31,23 @@ app.use(express.static("public"));
 
 // rutas
 app.get("/", (req, res) => {
+    res.redirect("/login");
+});
+app.get("/index", (req, res) => {
     res.render("index");
 });
+
+app.use("/", authRoutes);
 app.use("/clientes", clienteRoutes);
 app.use("/proveedores", proveedorRoutes);
 app.use("/pedidos", pedidoRoutes);
 app.use("/productos", productoRoutes);
 app.use("/cuentas", cuentaCorrienteRoutes);
 
-app.listen(PORT, () => {
-    console.log("Servidor corriendo en puerto " + PORT);
-});
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log("Servidor corriendo en puerto " + PORT);
+    });
+}
+
+module.exports = app;

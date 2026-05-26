@@ -1,24 +1,36 @@
 const express = require("express");
-// Este router permite definir rutas en un archivo separado del servidor principal
 const router = express.Router();
 
 const {
     obtenerProveedores,
-    obtenerProveedorVista,
     obtenerProveedorPorId,
     crearProveedor,
     actualizarProveedor,
     eliminarProveedor,
+    obtenerProveedorVista,
     obtenerProveedorDetalle,
+    crearProveedorVista,
+    crearProveedorVistaPost,
+    actualizarProveedorVista,
+    actualizarProveedorVistaPost,
+    eliminarProveedorVista,
+    eliminarProveedorVistaPost,
 } = require("../controllers/proveedorController");
 
-// rutas CRUD
-router.get("/", obtenerProveedores);
 router.get("/vista", obtenerProveedorVista);
+router.get("/vista/nuevo", crearProveedorVista);
+router.get("/vista/editar/:id", actualizarProveedorVista);
+router.get("/vista/eliminar/:id", eliminarProveedorVista);
+router.get("/detalle/:id", obtenerProveedorDetalle);
+
+router.post("/vista/nuevo", crearProveedorVistaPost);
+router.post("/editar/:id", actualizarProveedorVistaPost);
+router.post("/eliminar/:id", eliminarProveedorVistaPost);
+
+router.get("/", obtenerProveedores);
 router.get("/:id", obtenerProveedorPorId);
 router.post("/", crearProveedor);
 router.put("/:id", actualizarProveedor);
 router.delete("/:id", eliminarProveedor);
-router.get("/detalle/:id", obtenerProveedorDetalle);
 
 module.exports = router;

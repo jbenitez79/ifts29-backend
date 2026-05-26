@@ -4,17 +4,18 @@ block content
   h2 Editar Cuenta Corriente
 
   .card
-    p
-      strong Cliente ID:
-      | #{cuenta.idCliente}
+    if cuenta.cliente
+      p
+        strong Cliente:
+        | #{cuenta.cliente.nombre} #{cuenta.cliente.apellido} (CUIT: #{cuenta.cliente.cuit})
 
     p
       strong Saldo Actual:
       | $#{cuenta.saldo.toFixed(2)}
 
-    form(method="POST", action=`/cuentas/cargo`)
+    form(method="POST", action="/cuentas/vista/cargo")
       h3 Registrar Carga
-      input(type="hidden", name="idCliente", value=cuenta.idCliente)
+      input(type="hidden", name="cuentaId", value=cuenta._id)
 
       label Monto:
       input(type="number", name="monto", step="0.01", required)
@@ -30,9 +31,9 @@ block content
 
     hr
 
-    form(method="POST", action=`/cuentas/pago`)
+    form(method="POST", action="/cuentas/vista/pago")
       h3 Registrar Pago
-      input(type="hidden", name="idCliente", value=cuenta.idCliente)
+      input(type="hidden", name="cuentaId", value=cuenta._id)
 
       label Monto:
       input(type="number", name="monto", step="0.01", required)

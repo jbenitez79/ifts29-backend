@@ -6,7 +6,7 @@ block content
   .card
     p
       strong ID:
-      | #{producto.id}
+      | #{producto._id}
 
     p
       strong Nombre:
@@ -14,7 +14,7 @@ block content
 
     p
       strong Descripcion:
-      | #{producto.descripcion}
+      | #{producto.descripcion || ''}
 
     p
       strong Precio:

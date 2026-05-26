@@ -6,11 +6,11 @@ block content
   .card
     p
       strong ID Pedido:
-      | #{pedido.id}
+      | #{pedido._id}
 
     p
       strong Fecha:
-      | #{pedido.fecha}
+      | #{pedido.fecha ? pedido.fecha.toLocaleDateString('es-AR') : ''}
 
     if pedido.cliente
       p
@@ -35,12 +35,13 @@ block content
           th Precio Unitario
           th Subtotal
       tbody
-        each prod in pedido.productos
-          tr
-            td= prod.cantidad
-            td= prod.descripcion || prod.nombreProducto
-            td= "$" + prod.precio
-            td= "$" + prod.subtotal
+        if pedido.productos
+          each prod in pedido.productos
+            tr
+              td= prod.cantidad
+              td= prod.producto ? (prod.producto.descripcion || prod.producto.nombre) : 'Producto desconocido'
+              td= "$" + prod.precio
+              td= "$" + (prod.cantidad * prod.precio)
 
     .total-pedido
       strong Total: $#{pedido.total}

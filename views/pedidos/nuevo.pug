@@ -3,7 +3,7 @@ extends ../layout
 block content
   h2 Nuevo Pedido
 
-  form(method="POST", action="/pedidos")
+  form(method="POST", action="/pedidos/vista/nuevo")
 
     h3 Cliente
     label CUIT (buscar por CUIT):
@@ -46,16 +46,16 @@ block content
 
     script.
       let contador = 1;
-      
+
       function buscarClientePorCuit() {
         const cuit = document.getElementById('cuitInput').value;
         if (cuit.length >= 8) {
           fetch(`/clientes/buscarcuit/${cuit}`)
             .then(res => res.json())
             .then(data => {
-              if (data && data.id) {
-                document.getElementById('idClienteHidden').value = data.id;
-                document.getElementById('cliente-info').innerHTML = 
+              if (data && data._id) {
+                document.getElementById('idClienteHidden').value = data._id;
+                document.getElementById('cliente-info').innerHTML =
                   `<p style="color: green;">✓ Cliente: <strong>${data.nombre} ${data.apellido}</strong> - CUIT: ${data.cuit}</p>`;
               }
             })
@@ -70,11 +70,10 @@ block content
           fetch(`/productos/buscarnombre/${encodeURIComponent(nombre)}`)
             .then(res => res.json())
             .then(data => {
-              if (data && data.id) {
-                document.getElementById('idProductoHidden' + index).value = data.id;
-                document.getElementById('producto-info-' + index).innerHTML = 
+              if (data && data._id) {
+                document.getElementById('idProductoHidden' + index).value = data._id;
+                document.getElementById('producto-info-' + index).innerHTML =
                   `<p style="color: green;">✓ Producto: <strong>${data.nombre}</strong> - Stock: ${data.stock} - Precio: $${data.precio}</p>`;
-                // Auto-completar precio
                 const precioInput = document.querySelector(`input[name="productos[${index}][precio]"]`);
                 if (precioInput && !precioInput.value) {
                   precioInput.value = data.precio;

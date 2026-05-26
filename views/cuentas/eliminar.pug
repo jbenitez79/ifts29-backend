@@ -6,11 +6,12 @@ block content
   .card
     p
       strong ID:
-      | #{cuenta.id}
+      | #{cuenta._id}
 
-    p
-      strong Cliente ID:
-      | #{cuenta.idCliente}
+    if cuenta.cliente
+      p
+        strong Cliente:
+        | #{cuenta.cliente.nombre} #{cuenta.cliente.apellido} (CUIT: #{cuenta.cliente.cuit})
 
     p
       strong Saldo:
@@ -27,7 +28,7 @@ block content
     p(style="color: red; margin-top: 1rem;")
       strong ¿Está seguro que desea eliminar esta cuenta corriente?
 
-  form(method="POST", action=`/cuentas/eliminar/${cuenta.idCliente}`)
+  form(method="POST", action=`/cuentas/vista/eliminar/${cuenta._id}`)
     button(type="submit", style="background-color: red; color: white;") Eliminar
 
   a.btn(href="/cuentas/vista") Volver

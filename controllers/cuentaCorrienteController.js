@@ -1,217 +1,372 @@
-const fs = require("fs");
-const path = require("path");
-const rutaArchivo = path.join(__dirname, "../data/cuentaCorriente.json");
+const CuentaCorriente = require("../models/CuentaCorriente");
+const Cliente = require("../models/Cliente");
 
-const leerCuentas = () => {
+const obtenerCuentas = async (req, res) => {
     try {
-        const data = fs.readFileSync(rutaArchivo, "utf8");
-        return JSON.parse(data);
-    } catch (error) {
-        return [];
-    }
-};
-
-const guardarCuentas = (datos) => {
-    fs.writeFileSync(rutaArchivo, JSON.stringify(datos, null, 2));
-};
-
-const obtenerCuentas = (req, res) => {
-    try {
-        const cuentas = leerCuentas();
+        const cuentas = await CuentaCorriente.find().populate("cliente");
         res.json(cuentas);
     } catch (error) {
+        console.error("Error al obtener las cuentas:", error);
         res.status(500).json({ message: "Error al obtener las cuentas" });
     }
 };
 
-const obtenerCuentaPorClienteId = (req, res) => {
+const obtenerCuentaPorClienteId = async (req, res) => {
     try {
-        const cuentas = leerCuentas();
-        const idCliente = parseInt(req.params.idCliente);
-        const cuenta = cuentas.find(c => c.idCliente === idCliente);
-        if (!cuenta) return res.status(404).json({ message: "Cuenta no encontrada" });
+        const cuenta = await CuentaCorriente.findOne({
+            cliente: req.params.idCliente,
+        }).populate("cliente");
+        if (!cuenta) {
+            return res.status(404).json({ message: "Cuenta no encontrada" });
+        }
         res.json(cuenta);
     } catch (error) {
+        console.error("Error al obtener la cuenta:", error);
         res.status(500).json({ message: "Error al obtener la cuenta" });
     }
 };
 
-const crearCuenta = (req, res) => {
+const crearCuenta = async (req, res) => {
     try {
-        const cuentas = leerCuentas();
-        const { idCliente, limiteCredito } = req.body;
+        const { cliente, limiteCredito } = req.body;
 
-        if (!idCliente) {
+        if (!cliente) {
             return res.status(400).json({ message: "Faltan datos" });
         }
 
-        if (cuentas.find(c => c.idCliente === parseInt(idCliente))) {
-            return res.status(400).json({ message: "El cliente ya tiene cuenta corriente" });
+        const existe = await CuentaCorriente.findOne({ cliente });
+        if (existe) {
+            return res
+                .status(400)
+                .json({ message: "El cliente ya tiene cuenta corriente" });
         }
 
-        const nuevaCuenta = {
-            id: Math.max(...cuentas.map(c => c.id), 0) + 1,
-            idCliente: parseInt(idCliente),
-            saldo: 0,
+        const nuevaCuenta = await CuentaCorriente.create({
+            cliente,
             limiteCredito: parseFloat(limiteCredito) || 150000,
-            estado: "activo",
-            historial: []
-        };
+        });
 
-        cuentas.push(nuevaCuenta);
-        guardarCuentas(cuentas);
-
-        if (req.xhr || req.headers.accept?.includes("json")) {
-            res.status(201).json(nuevaCuenta);
-        } else {
-            res.redirect("/cuentas/vista");
-        }
+        res.status(201).json(nuevaCuenta);
     } catch (error) {
+        console.error("Error al crear la cuenta:", error);
         res.status(500).json({ message: "Error al crear la cuenta" });
     }
 };
 
-const registrarPago = (req, res) => {
+const registrarPago = async (req, res) => {
     try {
-        const cuentas = leerCuentas();
         const { idCliente, monto } = req.body;
 
         if (!idCliente || !monto || parseFloat(monto) <= 0) {
-            return res.status(400).json({ message: "Faltan datos o el monto es inválido" });
+            return res
+                .status(400)
+                .json({ message: "Faltan datos o el monto es inválido" });
         }
 
-        const cuentaIndex = cuentas.findIndex(c => c.idCliente === parseInt(idCliente));
-        if (cuentaIndex === -1) {
-            return res.status(404).json({ message: "Cuenta corriente no encontrada" });
+        const cuenta = await CuentaCorriente.findById(idCliente);
+        if (!cuenta) {
+            return res
+                .status(404)
+                .json({ message: "Cuenta corriente no encontrada" });
         }
 
-        cuentas[cuentaIndex].saldo -= parseFloat(monto);
+        cuenta.saldo -= parseFloat(monto);
 
-        const movimiento = {
-            fecha: new Date().toISOString().split("T")[0],
+        cuenta.historial.push({
+            fecha: new Date(),
             tipo: "PAGO",
-            monto: parseFloat(monto)
-        };
-        cuentas[cuentaIndex].historial.push(movimiento);
+            monto: parseFloat(monto),
+        });
 
-        if (cuentas[cuentaIndex].saldo <= cuentas[cuentaIndex].limiteCredito) {
-            cuentas[cuentaIndex].estado = "activo";
+        if (cuenta.saldo <= cuenta.limiteCredito) {
+            cuenta.estado = "activo";
         }
 
-        guardarCuentas(cuentas);
-        if (req.xhr || req.headers.accept?.includes("json")) {
-            res.json({ message: "Pago registrado exitosamente", cuenta: cuentas[cuentaIndex] });
-        } else {
-            res.redirect("/cuentas/vista");
-        }
+        await cuenta.save();
+
+        res.json({
+            message: "Pago registrado exitosamente",
+            cuenta,
+        });
     } catch (error) {
+        console.error("Error al registrar el pago:", error);
         res.status(500).json({ message: "Error al registrar el pago" });
     }
 };
 
-const registrarCarga = (req, res) => {
+const registrarCarga = async (req, res) => {
     try {
-        const cuentas = leerCuentas();
         const { idCliente, monto, descripcion } = req.body;
 
         if (!idCliente || !monto || parseFloat(monto) <= 0) {
-            return res.status(400).json({ message: "Faltan datos o el monto es inválido" });
+            return res
+                .status(400)
+                .json({ message: "Faltan datos o el monto es inválido" });
         }
 
-        const cuentaIndex = cuentas.findIndex(c => c.idCliente === parseInt(idCliente));
-        if (cuentaIndex === -1) {
-            return res.status(404).json({ message: "Cuenta corriente no encontrada" });
+        const cuenta = await CuentaCorriente.findById(idCliente);
+        if (!cuenta) {
+            return res
+                .status(404)
+                .json({ message: "Cuenta corriente no encontrada" });
         }
 
-        cuentas[cuentaIndex].saldo += parseFloat(monto);
+        cuenta.saldo += parseFloat(monto);
 
-        const movimiento = {
-            fecha: new Date().toISOString().split("T")[0],
+        cuenta.historial.push({
+            fecha: new Date(),
             tipo: "CARGO",
             monto: parseFloat(monto),
-            descripcion: descripcion || ""
-        };
-        cuentas[cuentaIndex].historial.push(movimiento);
+            descripcion: descripcion || "",
+        });
 
-        if (cuentas[cuentaIndex].saldo > cuentas[cuentaIndex].limiteCredito) {
-            cuentas[cuentaIndex].estado = "con_deuda";
+        if (cuenta.saldo > cuenta.limiteCredito) {
+            cuenta.estado = "con_deuda";
         }
 
-        guardarCuentas(cuentas);
-        if (req.xhr || req.headers.accept?.includes("json")) {
-            res.json({ message: "Carga registrada exitosamente", cuenta: cuentas[cuentaIndex] });
-        } else {
-            res.redirect("/cuentas/vista");
-        }
+        await cuenta.save();
+
+        res.json({
+            message: "Carga registrada exitosamente",
+            cuenta,
+        });
     } catch (error) {
+        console.error("Error al registrar la carga:", error);
         res.status(500).json({ message: "Error al registrar la carga" });
     }
 };
 
-const eliminarCuenta = (req, res) => {
+const eliminarCuenta = async (req, res) => {
     try {
-        const cuentas = leerCuentas();
-        const idCliente = parseInt(req.params.idCliente);
-        const cuentaIndex = cuentas.findIndex(c => c.idCliente === idCliente);
+        const cuenta = await CuentaCorriente.findById(req.params.id);
 
-        if (cuentaIndex === -1) {
+        if (!cuenta) {
             return res.status(404).json({ message: "Cuenta no encontrada" });
         }
 
-        if (cuentas[cuentaIndex].saldo > 0) {
-            return res.status(400).json({ message: "No se puede eliminar una cuenta con saldo pendiente" });
+        if (cuenta.saldo > 0) {
+            return res
+                .status(400)
+                .json({
+                    message: "No se puede eliminar una cuenta con saldo pendiente",
+                });
         }
 
-        cuentas.splice(cuentaIndex, 1);
-        guardarCuentas(cuentas);
+        await CuentaCorriente.findByIdAndDelete(req.params.id);
 
-        if (req.xhr || req.headers.accept?.includes("json")) {
-            res.json({ message: "Cuenta eliminada exitosamente" });
-        } else {
-            res.redirect("/cuentas/vista");
-        }
+        res.json({ message: "Cuenta eliminada exitosamente" });
     } catch (error) {
+        console.error("Error al eliminar la cuenta:", error);
         res.status(500).json({ message: "Error al eliminar la cuenta" });
     }
 };
 
-const obtenerCuentasVista = (req, res) => {
-    const cuentas = leerCuentas();
-    res.render("cuentas/index", { cuentas });
+const normalizeFechaMov = (mov) => {
+    if (mov.fecha && typeof mov.fecha === "string")
+        mov.fecha = new Date(mov.fecha);
+    return mov;
 };
 
-const obtenerDetalleCuentaVista = (req, res) => {
-    const cuentas = leerCuentas();
-    const idCliente = parseInt(req.params.idCliente);
-    const cuenta = cuentas.find(c => c.idCliente === idCliente);
-
-    if (!cuenta) return res.status(404).send("Cuenta no encontrada");
-
-    res.render("cuentas/detalle", { cuenta });
+const normalizeFechaCuenta = (cuenta) => {
+    if (cuenta.historial) {
+        cuenta.historial = cuenta.historial.map(normalizeFechaMov);
+    }
+    if (cuenta.fecha && typeof cuenta.fecha === "string")
+        cuenta.fecha = new Date(cuenta.fecha);
+    return cuenta;
 };
 
-const crearCuentaVista = (req, res) => {
-    res.render("cuentas/nuevo");
+const obtenerCuentasVista = async (req, res) => {
+    try {
+        let cuentas = await CuentaCorriente.find()
+            .populate("cliente")
+            .lean();
+        cuentas = cuentas.map(normalizeFechaCuenta);
+        res.render("cuentas/index", { cuentas });
+    } catch (error) {
+        console.error("Error al obtener las cuentas:", error);
+        res.status(500).send("Error al obtener las cuentas");
+    }
 };
 
-const editarCuentaVista = (req, res) => {
-    const cuentas = leerCuentas();
-    const idCliente = parseInt(req.params.idCliente);
-    const cuenta = cuentas.find(c => c.idCliente === idCliente);
-
-    if (!cuenta) return res.status(404).send("Cuenta no encontrada");
-
-    res.render("cuentas/editar", { cuenta });
+const obtenerDetalleCuentaVista = async (req, res) => {
+    try {
+        let cuenta = await CuentaCorriente.findById(req.params.id)
+            .populate("cliente")
+            .lean();
+        if (!cuenta) {
+            return res.status(404).send("Cuenta no encontrada");
+        }
+        cuenta = normalizeFechaCuenta(cuenta);
+        res.render("cuentas/detalle", { cuenta });
+    } catch (error) {
+        console.error("Error al obtener la cuenta:", error);
+        res.status(500).send("Error al obtener la cuenta");
+    }
 };
 
-const eliminarCuentaVista = (req, res) => {
-    const cuentas = leerCuentas();
-    const idCliente = parseInt(req.params.idCliente);
-    const cuenta = cuentas.find(c => c.idCliente === idCliente);
+const crearCuentaVista = async (req, res) => {
+    try {
+        const clientes = await Cliente.find().lean();
+        res.render("cuentas/nuevo", { clientes });
+    } catch (error) {
+        console.error("Error al cargar el formulario:", error);
+        res.status(500).send("Error al cargar el formulario");
+    }
+};
 
-    if (!cuenta) return res.status(404).send("Cuenta no encontrada");
+const crearCuentaVistaPost = async (req, res) => {
+    try {
+        const { idCliente, limiteCredito } = req.body;
 
-    res.render("cuentas/eliminar", { cuenta });
+        if (!idCliente) {
+            return res.status(400).send("Faltan datos");
+        }
+
+        const existe = await CuentaCorriente.findOne({ cliente: idCliente });
+        if (existe) {
+            return res
+                .status(400)
+                .send("El cliente ya tiene cuenta corriente");
+        }
+
+        await CuentaCorriente.create({
+            cliente: idCliente,
+            limiteCredito: parseFloat(limiteCredito) || 150000,
+        });
+
+        res.redirect("/cuentas/vista");
+    } catch (error) {
+        console.error("Error al crear la cuenta:", error);
+        res.status(500).send("Error al crear la cuenta");
+    }
+};
+
+const editarCuentaVista = async (req, res) => {
+    try {
+        let cuenta = await CuentaCorriente.findById(req.params.id)
+            .populate("cliente")
+            .lean();
+        if (!cuenta) {
+            return res.status(404).send("Cuenta no encontrada");
+        }
+        cuenta = normalizeFechaCuenta(cuenta);
+        res.render("cuentas/editar", { cuenta });
+    } catch (error) {
+        console.error("Error al obtener la cuenta:", error);
+        res.status(500).send("Error al obtener la cuenta");
+    }
+};
+
+const registrarCargaVistaPost = async (req, res) => {
+    try {
+        const { cuentaId, monto, descripcion } = req.body;
+
+        if (!cuentaId || !monto || parseFloat(monto) <= 0) {
+            return res
+                .status(400)
+                .send("Faltan datos o el monto es inválido");
+        }
+
+        const cuenta = await CuentaCorriente.findById(cuentaId);
+        if (!cuenta) {
+            return res.status(404).send("Cuenta corriente no encontrada");
+        }
+
+        cuenta.saldo += parseFloat(monto);
+
+        cuenta.historial.push({
+            fecha: new Date(),
+            tipo: "CARGO",
+            monto: parseFloat(monto),
+            descripcion: descripcion || "",
+        });
+
+        if (cuenta.saldo > cuenta.limiteCredito) {
+            cuenta.estado = "con_deuda";
+        }
+
+        await cuenta.save();
+
+        res.redirect("/cuentas/vista");
+    } catch (error) {
+        console.error("Error al registrar la carga:", error);
+        res.status(500).send("Error al registrar la carga");
+    }
+};
+
+const registrarPagoVistaPost = async (req, res) => {
+    try {
+        const { cuentaId, monto } = req.body;
+
+        if (!cuentaId || !monto || parseFloat(monto) <= 0) {
+            return res
+                .status(400)
+                .send("Faltan datos o el monto es inválido");
+        }
+
+        const cuenta = await CuentaCorriente.findById(cuentaId);
+        if (!cuenta) {
+            return res.status(404).send("Cuenta corriente no encontrada");
+        }
+
+        cuenta.saldo -= parseFloat(monto);
+
+        cuenta.historial.push({
+            fecha: new Date(),
+            tipo: "PAGO",
+            monto: parseFloat(monto),
+        });
+
+        if (cuenta.saldo <= cuenta.limiteCredito) {
+            cuenta.estado = "activo";
+        }
+
+        await cuenta.save();
+
+        res.redirect("/cuentas/vista");
+    } catch (error) {
+        console.error("Error al registrar el pago:", error);
+        res.status(500).send("Error al registrar el pago");
+    }
+};
+
+const eliminarCuentaVista = async (req, res) => {
+    try {
+        let cuenta = await CuentaCorriente.findById(req.params.id)
+            .populate("cliente")
+            .lean();
+        if (!cuenta) {
+            return res.status(404).send("Cuenta no encontrada");
+        }
+        cuenta = normalizeFechaCuenta(cuenta);
+        res.render("cuentas/eliminar", { cuenta });
+    } catch (error) {
+        console.error("Error al obtener la cuenta:", error);
+        res.status(500).send("Error al obtener la cuenta");
+    }
+};
+
+const eliminarCuentaVistaPost = async (req, res) => {
+    try {
+        const cuenta = await CuentaCorriente.findById(req.params.id);
+        if (!cuenta) {
+            return res.status(404).send("Cuenta no encontrada");
+        }
+
+        if (cuenta.saldo > 0) {
+            return res
+                .status(400)
+                .send("No se puede eliminar una cuenta con saldo pendiente");
+        }
+
+        await CuentaCorriente.findByIdAndDelete(req.params.id);
+
+        res.redirect("/cuentas/vista");
+    } catch (error) {
+        console.error("Error al eliminar la cuenta:", error);
+        res.status(500).send("Error al eliminar la cuenta");
+    }
 };
 
 module.exports = {
@@ -224,6 +379,10 @@ module.exports = {
     obtenerCuentasVista,
     obtenerDetalleCuentaVista,
     crearCuentaVista,
+    crearCuentaVistaPost,
     editarCuentaVista,
+    registrarCargaVistaPost,
+    registrarPagoVistaPost,
     eliminarCuentaVista,
+    eliminarCuentaVistaPost,
 };
