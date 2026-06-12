@@ -9,6 +9,7 @@ const Producto = require('./models/Producto');
 const CuentaCorriente = require('./models/CuentaCorriente');
 const Pedido = require('./models/Pedido');
 const Usuario = require('./models/Usuario');
+const bcrypt = require('bcrypt');
 
 const seedData = async () => {
     try {
@@ -25,10 +26,11 @@ const seedData = async () => {
         console.log('Colecciones limpiadas exitosamente.');
 
         // 1. Crear Usuarios
+        const passwordHasheada = await bcrypt.hash('password123', 10);
         const usuariosData = [
-            { nombre: 'Admin Uno', email: 'admin1@test.com', password: 'password123', rol: 'admin' },
-            { nombre: 'Operador Uno', email: 'operador1@test.com', password: 'password123', rol: 'operador' },
-            { nombre: 'Operador Dos', email: 'operador2@test.com', password: 'password123', rol: 'operador' }
+            { nombre: 'Admin Uno', email: 'admin1@test.com', password: passwordHasheada, rol: 'admin' },
+            { nombre: 'Operador Uno', email: 'operador1@test.com', password: passwordHasheada, rol: 'operador' },
+            { nombre: 'Operador Dos', email: 'operador2@test.com', password: passwordHasheada, rol: 'operador' }
         ];
         await Usuario.insertMany(usuariosData);
         console.log('Usuarios creados: 3');

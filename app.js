@@ -2,6 +2,7 @@
 require("dotenv").config();
 const express = require("express");
 const methodOverride = require("method-override");
+const cookieParser = require("cookie-parser");
 const app = express();
 
 const connectDB = require("./config/db");
@@ -14,12 +15,15 @@ const proveedorRoutes = require("./routes/proveedorRoutes");
 const pedidoRoutes = require("./routes/pedidoRoutes");
 const productoRoutes = require("./routes/productoRoutes");
 const cuentaCorrienteRoutes = require("./routes/cuentaCorrienteRoutes");
+const authMiddleware = require("./middlewares/authMiddleware");
+const errorHandler = require("./middlewares/errorHandler");
 
 // Iniciar la conexión a la base de datos
 connectDB();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(methodOverride("_method"));
 
 // Configura el motor de vistas Pug. Permite generar páginas HTML dinámicas desde el servidor. Es el motor de vistas
@@ -38,11 +42,17 @@ app.get("/index", (req, res) => {
 });
 
 app.use("/", authRoutes);
-app.use("/clientes", clienteRoutes);
-app.use("/proveedores", proveedorRoutes);
-app.use("/pedidos", pedidoRoutes);
-app.use("/productos", productoRoutes);
-app.use("/cuentas", cuentaCorrienteRoutes);
+
+// Rutas protegidas
+app.use("/index", authMiddleware);
+app.use("/clientes", authMiddleware, clienteRoutes);
+app.use("/proveedores", authMiddleware, proveedorRoutes);
+app.use("/pedidos", authMiddleware, pedidoRoutes);
+app.use("/productos", authMiddleware, productoRoutes);
+app.use("/cuentas", authMiddleware, cuentaCorrienteRoutes);
+
+// Manejador de errores global (debe ir después de las rutas)
+app.use(errorHandler);
 
 if (process.env.NODE_ENV !== 'test') {
     app.listen(PORT, () => {
