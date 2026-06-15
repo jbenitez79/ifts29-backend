@@ -3,6 +3,10 @@ extends ../layout
 block content
     h1 Login
 
+    if error
+        div(style="color:red; margin-bottom:10px;")
+            = error
+
     form(action="/login" method="POST")
         div
             label(for="email") Email

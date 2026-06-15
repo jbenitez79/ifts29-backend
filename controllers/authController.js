@@ -18,7 +18,9 @@ const loginUsuario = async (req, res, next) => {
         const usuario = await Usuario.findOne({ email });
 
         if (!usuario) {
-            return res.send('Usuario o contraseña incorrectos');
+            return res.render('auth/login', {
+                error: 'Usuario o contraseña incorrectos'
+         });
         }
 
         // Comparar password
@@ -40,6 +42,10 @@ const loginUsuario = async (req, res, next) => {
             process.env.JWT_SECRET || 'secreto_super_seguro_123',
             { expiresIn: '30m' } // Expiración de 30 minutos
         );
+
+        console.log("LOGIN OK");
+        console.log(usuario.email);
+        console.log("TOKEN GENERADO:", token);
 
         // Guardar token en cookie
         res.cookie('jwt', token, {
