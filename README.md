@@ -52,22 +52,43 @@ El sistema deberá diseñarse siguiendo una arquitectura modular con separación
 
 ### Variables de entorno
 
-Crear archivo .env:
-- PORT=3000
-- MONGODB_URI=mongodb://localhost:27017/todostock
+Crear archivo `.env` en la raíz del proyecto usando `.env.example` como referencia:
+```env
+PORT=3000
+MONGODB_URI=mongodb://localhost:27017/todostock
+JWT_SECRET=super_secret_key
+```
 
-### Ejecución
+### Ejecución Local
 
-Modo desarrollo:
-- npm run dev
-
-Modo producción:
-- npm start
+1. Asegúrate de tener el servicio de **MongoDB** en ejecución en tu máquina (por ejemplo, a través de Windows Services, Docker o lanzando `mongod`).
+2. Generar datos iniciales (opcional pero recomendado):
+   ```bash
+   npm run seed
+   ```
+3. Levantar el servidor:
+   - Modo desarrollo:
+     `npm run dev`
+   - Modo producción:
+     `npm start`
 
 ### Acceso a la aplicación:
 
 http://localhost:3000
 
+### Usuario por defecto:
+Tras ejecutar `npm run seed`, se crearán usuarios por defecto. Puedes ingresar usando:
+- **Email:** admin1@test.com
+- **Password:** password123
+
 ### Registrar usuario:
 
 http://localhost:3000/register
+
+## Despliegue en la Nube
+
+Para desplegar la aplicación en servicios cloud (como Render, Railway o Heroku):
+1. Crear un cluster en **MongoDB Atlas** y obtener la URL de conexión.
+2. En la plataforma de hosting, definir las variables de entorno (`NODE_ENV=production`, `MONGODB_URI`, `JWT_SECRET`).
+3. Especificar el comando de inicio (ej. `npm start`).
+4. La configuración de `engines` en `package.json` ya garantiza la compatibilidad con Node.js v18+.

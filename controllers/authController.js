@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const Usuario = require('../models/Usuario');
 
 const mostrarLogin = (req, res) => {
@@ -9,7 +10,7 @@ const mostrarRegister = (req, res) => {
     res.render('auth/register');
 };
 
-const loginUsuario = async (req, res) => {
+const loginUsuario = async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
@@ -33,14 +34,31 @@ const loginUsuario = async (req, res) => {
         }
 
         // Login exitoso
+        // Generar JWT
+        const token = jwt.sign(
+            { id: usuario._id, nombre: usuario.nombre, rol: usuario.rol, email: usuario.email },
+            process.env.JWT_SECRET || 'secreto_super_seguro_123',
+            { expiresIn: '30m' } // Expiración de 30 minutos
+        );
+
+        // Guardar token en cookie
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            maxAge: 30 * 60 * 1000 // 30 minutos en milisegundos
+        });
+
         res.redirect('/index');
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Error al iniciar sesión');
+        next(error);
     }
 };
 
-const registrarUsuario = async (req, res) => {
+const logoutUsuario = (req, res) => {
+    res.clearCookie('jwt');
+    res.redirect('/login');
+};
+
+const registrarUsuario = async (req, res, next) => {
     try {
         const { nombre, email, password } = req.body;
 
@@ -63,8 +81,7 @@ const registrarUsuario = async (req, res) => {
 
         res.redirect('/login');
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Error al registrar usuario');
+        next(error);
     }
 };
 
@@ -73,4 +90,5 @@ module.exports = {
     mostrarRegister,
     registrarUsuario,
     loginUsuario,
+    logoutUsuario,
 };
