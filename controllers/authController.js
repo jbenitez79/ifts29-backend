@@ -43,10 +43,6 @@ const loginUsuario = async (req, res, next) => {
             { expiresIn: '30m' } // Expiración de 30 minutos
         );
 
-        console.log("LOGIN OK");
-        console.log(usuario.email);
-        console.log("TOKEN GENERADO:", token);
-
         // Guardar token en cookie
         res.cookie('jwt', token, {
             httpOnly: true,
@@ -66,7 +62,7 @@ const logoutUsuario = (req, res) => {
 
 const registrarUsuario = async (req, res, next) => {
     try {
-        const { nombre, email, password } = req.body;
+        const { nombre, email, password, rol } = req.body;
 
         // Verificar si ya existe
         const usuarioExistente = await Usuario.findOne({ email });
@@ -78,11 +74,18 @@ const registrarUsuario = async (req, res, next) => {
         // Hash password
         const passwordHasheada = await bcrypt.hash(password, 10);
 
+        // Validar rol
+        const rolesValidos = ['admin', 'operador'];
+        if (!rolesValidos.includes(rol)) {
+            return res.send('Rol inválido');
+        }
+
         // Crear usuario
         await Usuario.create({
             nombre,
             email,
             password: passwordHasheada,
+            rol,
         });
 
         res.redirect('/login');

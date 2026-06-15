@@ -16,4 +16,12 @@ block content
             label(for="password") Contraseña
             input(type="password" name="password" required)
 
+        div
+            label(for="rol") Rol
+            select(name="rol" required)
+                option(value="operador" selected) Operador
+                option(value="admin") Administrador
+
+        div(style="margin-top: 40px;")
+
         button(type="submit") Registrarse

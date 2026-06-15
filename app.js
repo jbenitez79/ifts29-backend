@@ -17,6 +17,7 @@ const productoRoutes = require("./routes/productoRoutes");
 const cuentaCorrienteRoutes = require("./routes/cuentaCorrienteRoutes");
 const authMiddleware = require("./middlewares/authMiddleware");
 const errorHandler = require("./middlewares/errorHandler");
+const authorizeRoles = require("./middlewares/authorizeRoles");
 
 // Iniciar la conexión a la base de datos
 connectDB();
@@ -37,14 +38,14 @@ app.use(express.static("public"));
 app.get("/", (req, res) => {
     res.redirect("/login");
 });
-app.get("/index", (req, res) => {
+app.get("/index", authMiddleware,(req, res) => {
     res.render("index");
 });
 
 app.use("/", authRoutes);
 
 // Rutas protegidas
-app.use("/index", authMiddleware);
+//app.use("/index", authMiddleware);
 app.use("/clientes", authMiddleware, clienteRoutes);
 app.use("/proveedores", authMiddleware, proveedorRoutes);
 app.use("/pedidos", authMiddleware, pedidoRoutes);
