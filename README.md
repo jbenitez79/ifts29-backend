@@ -44,25 +44,25 @@ El sistema deberá diseñarse siguiendo una arquitectura modular con separación
 
 ### Clonar el repositorio:
 
-git clone https://github.com/jbenitez79/ifts29-backend.git
+- git clone https://github.com/jbenitez79/ifts29-backend.git
 
 ### Instalar dependencias:
 
-npm install
+- npm install
 
 ### Variables de entorno
 
 Crear archivo .env:
-PORT=3000
-MONGODB_URI=mongodb://localhost:27017/todostock
+- PORT=3000
+- MONGODB_URI=mongodb://localhost:27017/todostock
 
 ### Ejecución
 
 Modo desarrollo:
-npm run dev
+- npm run dev
 
 Modo producción:
-npm start
+- npm start
 
 ### Acceso a la aplicación:
 
