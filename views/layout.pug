@@ -8,15 +8,19 @@ html(lang="es")
 
   body
     header
-      a(href="/" style="text-decoration:none; color:inherit;")
+      a(href="/index" style="text-decoration:none; color:inherit;")
         h1 TodoStock S.A.
       nav
-        a(href="/") Página Principal
+        a(href="/index") Página Principal
         a(href="/clientes/vista") Clientes
-        a(href="/productos/vista") Productos
+        if usuario && usuario.rol === 'admin'
+          a(href="/productos/vista") Productos
         a(href="/pedidos/vista") Pedidos
-        a(href="/proveedores/vista") Proveedores
+        if usuario && usuario.rol === 'admin'
+          a(href="/proveedores/vista") Proveedores
         a(href="/cuentas/vista") Cuentas Corrientes
+        if usuario
+          a(href="/logout" style="margin-left:auto; color:#f87171;") Cerrar Sesión
 
     main.content-container
       block content

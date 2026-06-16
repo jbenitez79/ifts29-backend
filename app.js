@@ -47,9 +47,9 @@ app.use("/", authRoutes);
 // Rutas protegidas
 //app.use("/index", authMiddleware);
 app.use("/clientes", authMiddleware, clienteRoutes);
-app.use("/proveedores", authMiddleware, proveedorRoutes);
+app.use("/productos", authMiddleware, authorizeRoles('admin'), productoRoutes);
+app.use("/proveedores", authMiddleware, authorizeRoles('admin'), proveedorRoutes);
 app.use("/pedidos", authMiddleware, pedidoRoutes);
-app.use("/productos", authMiddleware, productoRoutes);
 app.use("/cuentas", authMiddleware, cuentaCorrienteRoutes);
 
 // Manejador de errores global (debe ir después de las rutas)
