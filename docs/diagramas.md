@@ -271,7 +271,7 @@ erDiagram
 
     CUENTA_CORRIENTE {
         ObjectId id PK
-        ObjectId cliente FK UK
+        ObjectId cliente FK
         number saldo
         number limiteCredito
         string estado "activo | con_deuda"
@@ -289,7 +289,7 @@ erDiagram
     CLIENTE ||--o{ PEDIDO : "tiene"
     PEDIDO ||--|{ PEDIDO_PRODUCTO : "contiene"
     PEDIDO_PRODUCTO }|--|| PRODUCTO : "referencia"
-    CLIENTE ||--o| CUENTA_CORRIENTE : "posee"
+    CLIENTE ||--o| CUENTA_CORRIENTE : "posee (única)"
     CUENTA_CORRIENTE ||--o{ MOVIMIENTO : "registra"
 ```
 
