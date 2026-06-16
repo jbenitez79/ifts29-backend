@@ -1,0 +1,44 @@
+extends ../layout
+
+block content
+  h2 Editar Cuenta Corriente
+
+  .card
+    p
+      strong Cliente ID:
+      | #{cuenta.idCliente}
+
+    p
+      strong Saldo Actual:
+      | $#{cuenta.saldo.toFixed(2)}
+
+    form(method="POST", action=`/cuentas/cargo`)
+      h3 Registrar Carga
+      input(type="hidden", name="idCliente", value=cuenta.idCliente)
+
+      label Monto:
+      input(type="number", name="monto", step="0.01", required)
+      br
+      br
+
+      label Descripción:
+      input(type="text", name="descripcion")
+      br
+      br
+
+      button(type="submit") Registrar Carga
+
+    hr
+
+    form(method="POST", action=`/cuentas/pago`)
+      h3 Registrar Pago
+      input(type="hidden", name="idCliente", value=cuenta.idCliente)
+
+      label Monto:
+      input(type="number", name="monto", step="0.01", required)
+      br
+      br
+
+      button(type="submit", style="background-color: green;") Registrar Pago
+
+  a.btn(href="/cuentas/vista") Volver

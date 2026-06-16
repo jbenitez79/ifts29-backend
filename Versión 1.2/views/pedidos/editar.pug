@@ -1,0 +1,52 @@
+extends ../layout
+
+block content
+  h2 Editar Pedido
+
+  form(method="POST", action=`/pedidos/editar/${pedido._id}`)
+
+    if pedido.cliente
+      label Cliente:
+      p(style="margin: 0.25rem 0;") #{pedido.cliente.nombre} #{pedido.cliente.apellido} (CUIT: #{pedido.cliente.cuit})
+      input(type="hidden", name="idCliente", value=pedido.cliente._id)
+
+    br
+
+    label Fecha:
+    input(type="date", name="fecha", value=pedido.fecha ? pedido.fecha.toISOString().split('T')[0] : '')
+    br
+    br
+
+    label Estado:
+    select(name="estado")
+      option(value="pendiente", selected=pedido.estado === "pendiente") Pendiente
+      option(value="aprobado", selected=pedido.estado === "aprobado") Aprobado
+      option(value="enviado", selected=pedido.estado === "enviado") Enviado
+      option(value="entregado", selected=pedido.estado === "entregado") Entregado
+      option(value="cancelado", selected=pedido.estado === "cancelado") Cancelado
+    br
+    br
+
+    h3 Productos
+    if pedido.productos
+      each prod, index in pedido.productos
+        div.producto-item
+          input(type="hidden", name=`productos[${index}][idProducto]`, value=prod.producto ? prod.producto._id : '')
+
+          label Producto:
+          p(style="margin: 0.25rem 0;") #{prod.producto ? prod.producto.nombre : 'Producto desconocido'}
+          br
+
+          label Cantidad:
+          input(type="number", name=`productos[${index}][cantidad]`, value=prod.cantidad)
+          br
+          br
+
+          label Precio:
+          input(type="number", name=`productos[${index}][precio]`, value=prod.precio, step="0.01")
+          br
+          br
+
+    button(type="submit") Guardar
+
+  a.btn(href="/pedidos/vista") Volver

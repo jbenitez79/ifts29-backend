@@ -1,0 +1,48 @@
+extends ../layout
+
+block content
+  h2 Editar Pedido
+
+  form(method="POST", action=`/pedidos/editar/${pedido.id}`)
+
+    label Cliente ID:
+    input(type="number", name="idCliente", value=pedido.idCliente)
+    br
+    br
+
+    label Fecha:
+    input(type="date", name="fecha", value=pedido.fecha)
+    br
+    br
+
+    label Estado:
+    select(name="estado")
+      option(value="pendiente", selected=pedido.estado === "pendiente") Pendiente
+      option(value="aprobado", selected=pedido.estado === "aprobado") Aprobado
+      option(value="enviado", selected=pedido.estado === "enviado") Enviado
+      option(value="entregado", selected=pedido.estado === "entregado") Entregado
+      option(value="cancelado", selected=pedido.estado === "cancelado") Cancelado
+    br
+    br
+
+    h3 Productos
+    each prod, index in pedido.productos
+      div.producto-item
+        label ID Producto:
+        input(type="number", name=`productos[${index}][idProducto]`, value=prod.idProducto)
+        br
+        br
+
+        label Cantidad:
+        input(type="number", name=`productos[${index}][cantidad]`, value=prod.cantidad)
+        br
+        br
+
+        label Precio:
+        input(type="number", name=`productos[${index}][precio]`, value=prod.precio, step="0.01")
+        br
+        br
+
+    button(type="submit") Guardar
+
+  a.btn(href="/pedidos/vista") Volver

@@ -1,0 +1,36 @@
+extends ../layout
+
+block content
+  h2 Detalle Producto
+
+  .card
+    p
+      strong ID:
+      | #{producto.id}
+
+    p
+      strong Nombre:
+      | #{producto.nombre}
+
+    p
+      strong Descripcion:
+      | #{producto.descripcion}
+
+    p
+      strong Precio:
+      | $#{producto.precio}
+
+    p
+      strong Stock:
+      span(style=`color: ${parseInt(producto.stock) <= parseInt(producto.stock_minimo) ? 'red' : 'green'}`)
+        | #{producto.stock}
+
+    p
+      strong Stock Mínimo:
+      | #{producto.stock_minimo}
+
+    if parseInt(producto.stock) <= parseInt(producto.stock_minimo)
+      p(style="color: red; font-weight: bold;")
+        | ⚠️ Stock por debajo del mínimo
+
+  a.btn(href="/productos/vista") Volver

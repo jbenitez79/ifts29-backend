@@ -1,0 +1,55 @@
+extends ../layout
+
+block content
+  h2 Eliminar cliente
+  form(method="POST", action=`/clientes/eliminar/${cliente.id}`)
+    button(type="submit") Eliminar
+  p
+    strong ID:
+    | #{cliente.id}
+
+  p
+    strong Nombre:
+    | #{cliente.nombre}
+
+  p
+    strong Apellido:
+    | #{cliente.apellido}
+
+  p
+    strong Email:
+    | #{cliente.email}
+
+  p
+    strong Telefono:
+    | #{cliente.telefono}
+
+  p
+    strong CUIT:
+    | #{cliente.cuit}
+
+  p
+    strong Domicilio:
+    | #{cliente.domicilio}
+
+  p
+    strong Localidad:
+    | #{cliente.localidad}
+
+  p
+    strong Provincia:
+    | #{cliente.provincia}
+
+  p
+    strong Pais:
+    | #{cliente.pais}
+
+  p
+    strong Codigo Postal:
+    | #{cliente.codigoPostal}
+
+  p
+    strong Fecha de Nacimiento:
+    | #{cliente.fechaNacimiento}
+
+  a(href="/clientes/vista") Volver

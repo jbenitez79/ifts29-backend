@@ -1,0 +1,35 @@
+extends ../layout
+
+block content
+  h2 Editar Producto
+
+  form(method="POST", action=`/productos/${producto.id}?_method=PUT`)
+
+    label Nombre:
+    input(type="text", name="nombre", value=producto.nombre, required)
+    br
+    br
+
+    label Descripcion:
+    input(type="text", name="descripcion", value=producto.descripcion)
+    br
+    br
+
+    label Precio:
+    input(type="number", name="precio", value=producto.precio, step="0.01", required)
+    br
+    br
+
+    label Stock:
+    input(type="number", name="stock", value=producto.stock, required)
+    br
+    br
+
+    label Stock Mínimo:
+    input(type="number", name="stock_minimo", value=producto.stock_minimo, required)
+    br
+    br
+
+    button(type="submit") Guardar
+
+  a(href="/productos/vista") Volver

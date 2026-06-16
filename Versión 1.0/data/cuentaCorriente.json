@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "idCliente": 1,
+    "saldo": 0,
+    "limiteCredito": 150000,
+    "estado": "activo",
+    "historial": [
+      {
+        "fecha": "2026-04-23",
+        "tipo": "CARGO",
+        "monto": 50000,
+        "descripcion": "Pedido #123456"
+      },
+      {
+        "fecha": "2026-04-23",
+        "tipo": "PAGO",
+        "monto": 50000
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "idCliente": 2,
+    "saldo": 0,
+    "limiteCredito": 150000,
+    "estado": "activo",
+    "historial": []
+  }
+]

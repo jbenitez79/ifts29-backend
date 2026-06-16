@@ -1,0 +1,37 @@
+extends ../layout
+
+block content
+  h2 Lista de Proveedores
+
+  table(border="1")
+    tr
+      th ID
+      th Nombre
+      th CUIT
+      th Telefono
+      th Email
+      th Domicilio
+      th Localidad
+      th Provincia
+      th Pais
+      th Rubro
+      th Condicion de Pago
+      th Activo
+      th Acciones
+
+    each proveedor in proveedores
+      tr
+        td= proveedor.id
+        td= proveedor.nombre
+        td= proveedor.cuit
+        td= proveedor.telefono
+        td= proveedor.email
+        td= proveedor.domicilio
+        td= proveedor.localidad
+        td= proveedor.provincia
+        td= proveedor.pais
+        td= proveedor.rubro
+        td= proveedor.condicionDePago
+        td= proveedor.activo ? 'Sí' : 'No'
+        td
+          a(href=`/proveedores/detalle/${proveedor.id}`) Ver

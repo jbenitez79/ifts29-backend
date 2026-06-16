@@ -1,0 +1,68 @@
+extends ../layout
+
+block content
+  h2 Editar Proveedor
+
+  form(method="POST", action=`/proveedores/editar/${proveedor._id}`)
+
+    label Nombre:
+    input(type="text", name="nombre", value=proveedor.nombre, required)
+    br
+    br
+
+    label CUIT:
+    input(type="text", name="cuit", value=proveedor.cuit, required)
+    br
+    br
+
+    label Teléfono:
+    input(type="text", name="telefono", value=proveedor.telefono, required)
+    br
+    br
+
+    label Email:
+    input(type="email", name="email", value=proveedor.email, required)
+    br
+    br
+
+    label Domicilio:
+    input(type="text", name="domicilio", value=proveedor.domicilio, required)
+    br
+    br
+
+    label Localidad:
+    input(type="text", name="localidad", value=proveedor.localidad, required)
+    br
+    br
+
+    label Provincia:
+    input(type="text", name="provincia", value=proveedor.provincia, required)
+    br
+    br
+
+    label País:
+    input(type="text", name="pais", value=proveedor.pais, required)
+    br
+    br
+
+    label Rubro:
+    input(type="text", name="rubro", value=proveedor.rubro, required)
+    br
+    br
+
+    label Condición de Pago:
+    select(name="condicionDePago", required)
+      option(value="contado", selected=proveedor.condicionDePago === "contado") Contado
+      option(value="débito", selected=proveedor.condicionDePago === "débito") Débito
+      option(value="crédito", selected=proveedor.condicionDePago === "crédito") Crédito
+    br
+    br
+
+    label Activo:
+    input(type="checkbox", name="activo", value="true", checked=proveedor.activo)
+    br
+    br
+
+    button(type="submit") Guardar
+
+  a.btn(href="/proveedores/vista") Volver

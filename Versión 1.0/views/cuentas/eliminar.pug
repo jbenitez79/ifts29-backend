@@ -1,0 +1,33 @@
+extends ../layout
+
+block content
+  h2 Eliminar Cuenta Corriente
+
+  .card
+    p
+      strong ID:
+      | #{cuenta.id}
+
+    p
+      strong Cliente ID:
+      | #{cuenta.idCliente}
+
+    p
+      strong Saldo:
+      | $#{cuenta.saldo.toFixed(2)}
+
+    p
+      strong Límite Crédito:
+      | $#{cuenta.limiteCredito}
+
+    p
+      strong Estado:
+      | #{cuenta.estado}
+
+    p(style="color: red; margin-top: 1rem;")
+      strong ¿Está seguro que desea eliminar esta cuenta corriente?
+
+  form(method="POST", action=`/cuentas/eliminar/${cuenta.idCliente}`)
+    button(type="submit", style="background-color: red; color: white;") Eliminar
+
+  a.btn(href="/cuentas/vista") Volver
